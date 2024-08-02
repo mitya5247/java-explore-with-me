@@ -1,4 +1,7 @@
 package ru.practicum.repository;
 
-public class StatRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import ru.practicum.model.EndpointHit;
+
+public interface StatRepository extends JpaRepository<EndpointHit, Integer> {
 }
