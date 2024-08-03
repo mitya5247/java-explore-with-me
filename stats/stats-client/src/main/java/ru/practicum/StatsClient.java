@@ -3,12 +3,9 @@ package ru.practicum;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.*;
-import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.http.HttpResponse;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Hello world!
@@ -30,7 +27,7 @@ public class StatsClient {
     }
 
     private <T> ResponseEntity<Object> prepareRequest(String uri, T body,
-                                                HttpMethod method) {
+                                                      HttpMethod method) {
         HttpEntity<Object> entity = new HttpEntity<>(body, this.defaultHeaders());
 
         ResponseEntity<Object> response = template.exchange(uri, method, entity, Object.class);
