@@ -1,7 +1,14 @@
 package ru.practicum.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@AllArgsConstructor
+@Getter
+@Setter
 public class ViewStats {
-    Integer id;
+    String app;
     String uri;
-    Integer hits;
+    Long hits;
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.PastOrPresent;
+import java.time.LocalDateTime;
 
 /**
  * Hello world!
@@ -25,5 +26,5 @@ public class EndpointHit {
     String ip;
     @PastOrPresent
     @Column(name = "moment")
-    String timestamp;
+    LocalDateTime timestamp;
 }
