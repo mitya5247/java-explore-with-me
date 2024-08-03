@@ -25,11 +25,11 @@ public class StatsClient {
         return this.prepareRequest(uri, null, HttpMethod.GET);
     }
 
-    public ResponseEntity<Object> postRequest(String uri, T body) {
+    public <T> ResponseEntity<Object> postRequest(String uri, T body) {
         return this.prepareRequest(uri, body, HttpMethod.POST);
     }
 
-    private ResponseEntity<Object> prepareRequest(String uri, T body,
+    private <T> ResponseEntity<Object> prepareRequest(String uri, T body,
                                                 HttpMethod method) {
         HttpEntity<Object> entity = new HttpEntity<>(body, this.defaultHeaders());
 
