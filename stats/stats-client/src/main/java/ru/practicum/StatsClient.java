@@ -26,13 +26,9 @@ public class StatsClient {
         return this.prepareRequest(uri, body, HttpMethod.POST);
     }
 
-    private <T> ResponseEntity<Object> prepareRequest(String uri, T body,
-                                                      HttpMethod method) {
+    private <T> ResponseEntity<Object> prepareRequest(String uri, T body, HttpMethod method) {
         HttpEntity<Object> entity = new HttpEntity<>(body, this.defaultHeaders());
-
-        ResponseEntity<Object> response = template.exchange(uri, method, entity, Object.class);
-
-        return response;
+        return template.exchange(uri, method, entity, Object.class);
     }
 
     private HttpHeaders defaultHeaders() {
