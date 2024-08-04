@@ -20,7 +20,7 @@ public class StatController {
     private final StatServiceImpl service;
 
     @PostMapping("/hit")
-    public String createHit(HttpServletRequest request, @RequestBody @Valid EndpointHitDto endpointHit) {
+    public String createHit(HttpServletRequest request, @RequestBody EndpointHitDto endpointHit) {
         return service.createHit(request, endpointHit);
     }
 
