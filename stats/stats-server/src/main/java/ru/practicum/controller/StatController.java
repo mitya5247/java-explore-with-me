@@ -8,7 +8,6 @@ import ru.practicum.model.ViewStats;
 import ru.practicum.service.StatServiceImpl;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
