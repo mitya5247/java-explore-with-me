@@ -7,9 +7,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDateTime;
 
-/**
- * Hello world!
- */
 @Entity
 @Table(name = "hits")
 @Data
