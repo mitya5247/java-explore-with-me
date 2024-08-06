@@ -7,9 +7,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-/**
- * Hello world!
- */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StatsClient {
     RestTemplate template;
