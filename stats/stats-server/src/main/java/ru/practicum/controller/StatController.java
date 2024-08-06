@@ -24,7 +24,9 @@ public class StatController {
     }
 
     @GetMapping("/stats")
-    public List<ViewStats> getStat(@RequestParam(required = false) String start, @RequestParam(required = false) String end, @RequestParam(required = false) List<String> uris,
+    public List<ViewStats> getStat(@RequestParam(defaultValue = "2021-01-01 00:00:00") String start,
+                                   @RequestParam(defaultValue = "2021-01-01 00:00:00") String end,
+                                   @RequestParam(required = false) List<String> uris,
                                    @RequestParam(defaultValue = "false", required = false) Boolean unique) {
         return service.getStat(start, end, uris, unique);
     }
