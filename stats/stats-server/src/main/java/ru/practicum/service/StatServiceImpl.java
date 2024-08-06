@@ -1,7 +1,6 @@
 package ru.practicum.service;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.Mapper;
@@ -18,7 +17,6 @@ import java.util.List;
 @Service
 public class StatServiceImpl implements StatService {
 
-    @Autowired
     private final StatRepository repository;
 
     @Override
