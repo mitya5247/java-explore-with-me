@@ -1,7 +1,7 @@
 package ru.practicum.service.publ;
 
 import ru.practicum.exceptions.EntityNotFoundException;
-import ru.practicum.model.Category;
+import ru.practicum.model.category.Category;
 
 import java.util.List;
 

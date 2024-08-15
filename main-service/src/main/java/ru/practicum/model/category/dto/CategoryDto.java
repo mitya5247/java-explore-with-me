@@ -1,4 +1,4 @@
-package ru.practicum.model.dto;
+package ru.practicum.model.category.dto;
 
 import lombok.Data;
 import org.springframework.validation.annotation.Validated;

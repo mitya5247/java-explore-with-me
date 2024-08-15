@@ -8,7 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.exceptions.EntityNotFoundException;
-import ru.practicum.model.Category;
+import ru.practicum.model.category.Category;
 import ru.practicum.repository.CategoryRepository;
 
 import java.util.List;

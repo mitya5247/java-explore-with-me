@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exceptions.EmailAlreadyExistsException;
 import ru.practicum.exceptions.EntityNotFoundException;
-import ru.practicum.model.User;
+import ru.practicum.model.user.User;
 import ru.practicum.service.admin.AdminUserService;
 
 import javax.validation.Valid;

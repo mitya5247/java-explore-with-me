@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.mapper.CategoryMapper;
-import ru.practicum.model.Category;
-import ru.practicum.model.dto.CategoryDto;
+import ru.practicum.model.category.Category;
+import ru.practicum.model.category.dto.CategoryDto;
 import ru.practicum.repository.CategoryRepository;
 
 @Service

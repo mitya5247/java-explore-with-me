@@ -1,8 +1,8 @@
 package ru.practicum.service.admin;
 
 import ru.practicum.exceptions.EntityNotFoundException;
-import ru.practicum.model.Category;
-import ru.practicum.model.dto.CategoryDto;
+import ru.practicum.model.category.Category;
+import ru.practicum.model.category.dto.CategoryDto;
 
 public interface AdminCategoryService {
 

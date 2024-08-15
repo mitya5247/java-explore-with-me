@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exceptions.EntityNotFoundException;
-import ru.practicum.model.Category;
+import ru.practicum.model.category.Category;
 import ru.practicum.service.publ.PublicCategoryService;
 
 import java.util.List;

@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.exceptions.EmailAlreadyExistsException;
 import ru.practicum.exceptions.EntityNotFoundException;
-import ru.practicum.model.User;
+import ru.practicum.model.user.User;
 import ru.practicum.repository.UserRepository;
 
 import java.util.List;

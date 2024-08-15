@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exceptions.EntityNotFoundException;
-import ru.practicum.model.Category;
-import ru.practicum.model.dto.CategoryDto;
+import ru.practicum.model.category.Category;
+import ru.practicum.model.category.dto.CategoryDto;
 import ru.practicum.service.admin.AdminCategoryService;
 
 @RestController

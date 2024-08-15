@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.exceptions.ApiError;
 import ru.practicum.exceptions.EmailAlreadyExistsException;
 import ru.practicum.exceptions.EntityNotFoundException;
+import ru.practicum.exceptions.RequestErrorException;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -28,6 +30,15 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleConflictException(final RequestErrorException e) {
+        List<StackTraceElement> list = List.of(e.getStackTrace());
+        log.info("error request exception");
+        return new ApiError(list, e.getMessage(), e.getCause().toString(), HttpStatus.CONFLICT.toString(),
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleNotFoundException(final EntityNotFoundException e) {
         List<StackTraceElement> list = List.of(e.getStackTrace());
@@ -39,6 +50,21 @@ public class ErrorHandler {
         }
         apiError.setMessage(e.getMessage());
         apiError.setStatus(HttpStatus.NOT_FOUND.toString());
+        return apiError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleConsraintViolationException(final ConstraintViolationException e) {
+        List<StackTraceElement> list = List.of(e.getStackTrace());
+        log.info("bad request");
+        ApiError apiError = new ApiError();
+        apiError.setErrors(list);
+        if (e.getCause() != null) {
+            apiError.setReason(e.getCause().toString());
+        }
+        apiError.setMessage(e.getMessage());
+        apiError.setStatus(HttpStatus.BAD_REQUEST.toString());
         return apiError;
     }
 }
