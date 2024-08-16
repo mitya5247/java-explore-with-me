@@ -1,10 +1,13 @@
 package ru.practicum.controller.publ;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.model.event.dto.EventDtoResponse;
 import ru.practicum.service.publ.PublicEventService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -15,16 +18,21 @@ public class PublicEventController {
     PublicEventService service;
 
     @GetMapping
-    public List<EventDtoResponse> get(@RequestParam String textAnnotation, @RequestParam List<Integer> categoriesId,
-                                      @RequestParam(defaultValue = "false") Boolean paid, @RequestParam String rangeStart,
-                                      @RequestParam String rangeEnd, @RequestParam(defaultValue = "false") Boolean onlyAvailable,
-                                      @RequestParam String sort, @RequestParam(defaultValue = "0") Integer from,
-                                      @RequestParam(defaultValue = "10") Integer size) {
-        return service.get(textAnnotation, categoriesId, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
+    public List<EventDtoResponse> get(@RequestParam(required = false) String text,
+                                      @RequestParam(required = false) List<Integer> categories,
+                                      @RequestParam(defaultValue = "false") Boolean paid,
+                                      @RequestParam(required = false) String rangeStart,
+                                      @RequestParam(required = false) String rangeEnd,
+                                      @RequestParam(defaultValue = "false") Boolean onlyAvailable,
+                                      @RequestParam(required = false) String sort,
+                                      @RequestParam(defaultValue = "0") Integer from,
+                                      @RequestParam(defaultValue = "10") Integer size,
+                                      HttpServletRequest request) throws JsonProcessingException {
+        return service.get(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, request);
     }
 
     @GetMapping("/{eventId}")
-    public EventDtoResponse getEvent(@PathVariable Integer eventId) {
-        return service.getEvent(eventId);
+    public EventDtoResponse getEvent(@PathVariable Integer eventId, HttpServletRequest request) throws EntityNotFoundException {
+        return service.getEvent(eventId, request);
     }
 }

@@ -27,12 +27,25 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     List<Event> findEventByUsersAndStateAndCategoryBetween(@Param("usersId") List<Integer> usersId, @Param("states") List<State> states,
                         @Param("categoriesId") List<Integer> categoriesId,
                         @Param("startTime") LocalDateTime startTime,
-                        @Param("endTime") LocalDateTime endTime, Pageable pageable);
+                        @Param("endTime") LocalDateTime endTime, Pageable pageable);  // admin - запрос сервиса со временем
 
     @Query(value = "select e from Event e where e.initiator.id IN :usersId AND e.state IN :states and e.category.id IN " +
             ":categoriesId")
     List<Event> findEventByUsersAndStateAndCategory(@Param("usersId") List<Integer> usersId,
                                                     @Param("states") List<State> states,
-                                                    @Param("categoriesId") List<Integer> categoriesId, Pageable pageable);
+                                                    @Param("categoriesId") List<Integer> categoriesId, Pageable pageable); // admin - запрос сервиса без времени
+
+
+    @Query(value = "select e from Event e where LOWER(e.annotation) like LOWER(:text) AND e.category.id IN :categoriesId " +
+            "AND e.paid = :paid AND e.eventDate BETWEEN :start AND :end")
+    List<Event> findEventsByAllCriteries(@Param("text") String textAnnotation, @Param("categoriesId") List<Integer> categoriesId,
+                                         @Param("paid") Boolean paid, @Param("start") LocalDateTime start,
+                                         @Param("end") LocalDateTime end); // сортировка в сервисе , public - со временем
+
+
+    @Query(value = "select e from Event e where LOWER(e.annotation) like LOWER(:text) AND e.category.id IN :categoriesId " +
+            "AND e.paid = :paid")
+    List<Event> findEventsByAllCriteriesWithoutTime(@Param("text") String textAnnotation, @Param("categoriesId") List<Integer> categoriesId,
+                                         @Param("paid") Boolean paid); // public - без времени
 
 }
