@@ -48,4 +48,6 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     List<Event> findEventsByAllCriteriesWithoutTime(@Param("text") String textAnnotation, @Param("categoriesId") List<Integer> categoriesId,
                                          @Param("paid") Boolean paid, Pageable pageable); // public - без времени
 
+    List<Event> findAllByIdIn(List<Integer> eventId); // поиск для подборок
+
 }

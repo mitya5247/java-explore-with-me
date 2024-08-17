@@ -4,12 +4,14 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.practicum.model.compilation.Compilation;
 import ru.practicum.model.location.Location;
 import ru.practicum.model.user.User;
 import ru.practicum.model.category.Category;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -52,4 +54,6 @@ public class Event {
     State state = State.PENDING;
     @Column(name = "title")
     String title;
+    @ManyToMany(mappedBy = "events")
+    List<Compilation> compilations;
 }
