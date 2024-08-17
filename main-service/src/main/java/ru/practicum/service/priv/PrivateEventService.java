@@ -15,7 +15,7 @@ public interface PrivateEventService {
 
     public List<EventShortDto> getEvents(Integer userId, Integer from, Integer size) throws EntityNotFoundException;
 
-    public Event getFullEvent(Integer userId, Integer eventId) throws EntityNotFoundException;
+    public EventDtoResponse getFullEvent(Integer userId, Integer eventId) throws EntityNotFoundException;
 
     public EventDtoResponse patchEvent(Integer userId, Integer eventId, UpdateEventUserRequest eventDto) throws EntityNotFoundException, EventPatchException;
 

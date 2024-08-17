@@ -17,7 +17,7 @@ public class PrivateRequestsController {
     PrivateRequestService service;
 
     @GetMapping("/{userId}/requests")
-    public List<ParticipationRequestDto> get(@PathVariable Integer userId) {
+    public List<ParticipationRequestDto> get(@PathVariable Integer userId) throws EntityNotFoundException {
         return service.get(userId);
     }
 
@@ -27,8 +27,8 @@ public class PrivateRequestsController {
         return service.create(userId, eventId);
     }
 
-    @PatchMapping("/users/{userId}/requests/{requestId}/cancel")
-    public ParticipationRequestDto patch(@PathVariable Integer userId, @PathVariable Integer requestId, @RequestBody ParticipationRequestDto requestDto) {
-        return service.patch(userId, requestId, requestDto);
+    @PatchMapping("/{userId}/requests/{requestId}/cancel")
+    public ParticipationRequestDto patch(@PathVariable Integer userId, @PathVariable Integer requestId) throws EntityNotFoundException {
+        return service.patch(userId, requestId);
     }
 }

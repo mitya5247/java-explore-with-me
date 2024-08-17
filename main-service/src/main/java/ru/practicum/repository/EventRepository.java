@@ -22,30 +22,30 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "e.initiator, e.paid, e.title, 0) from Event as e where e.initiator = :initiator")
     List<EventShortDtoDb> findAllByInitiator(@Param("initiator") User user1, Pageable pageable); // добавидть сортировку и добавить проекцию на этот класс для преобр в объект
 
-    @Query(value = "select e from Event e where e.initiator.id IN :usersId AND e.state IN :states AND e.category.id IN " +
-            ":categoriesId AND e.eventDate BETWEEN :startTime AND :endTime")
+    @Query(value = "select e from Event e where (e.initiator.id IS NOT NULL OR e.initiator.id IN :usersId) AND " +
+            "(e.state IS NOT NULL OR e.state IN :states) AND (e.category.id IS NOT NULL OR e.category.id IN :categoriesId) AND " +
+            "e.eventDate BETWEEN :startTime AND :endTime")
     List<Event> findEventByUsersAndStateAndCategoryBetween(@Param("usersId") List<Integer> usersId, @Param("states") List<State> states,
                         @Param("categoriesId") List<Integer> categoriesId,
                         @Param("startTime") LocalDateTime startTime,
                         @Param("endTime") LocalDateTime endTime, Pageable pageable);  // admin - запрос сервиса со временем
 
-    @Query(value = "select e from Event e where e.initiator.id IN :usersId AND e.state IN :states and e.category.id IN " +
-            ":categoriesId")
+    @Query(value = "select e from Event e where (e.initiator.id IN :usersId OR e.initiator.id IS NOT NULL) AND " +
+            "(e.state IN :states OR e.state IS NOT NULL) AND (e.category.id IN :categoriesId OR e.category.id IS NOT NULL)")
     List<Event> findEventByUsersAndStateAndCategory(@Param("usersId") List<Integer> usersId,
                                                     @Param("states") List<State> states,
                                                     @Param("categoriesId") List<Integer> categoriesId, Pageable pageable); // admin - запрос сервиса без времени
 
-
     @Query(value = "select e from Event e where LOWER(e.annotation) like LOWER(:text) AND e.category.id IN :categoriesId " +
-            "AND e.paid = :paid AND e.eventDate BETWEEN :start AND :end")
+            "AND (:paid IS NULL OR e.paid = :paid) AND e.state = 'PUBLISHED' AND e.eventDate BETWEEN :start AND :end")
     List<Event> findEventsByAllCriteries(@Param("text") String textAnnotation, @Param("categoriesId") List<Integer> categoriesId,
                                          @Param("paid") Boolean paid, @Param("start") LocalDateTime start,
-                                         @Param("end") LocalDateTime end); // сортировка в сервисе , public - со временем
+                                         @Param("end") LocalDateTime end, Pageable pageable); // сортировка в сервисе , public - со временем
 
 
     @Query(value = "select e from Event e where LOWER(e.annotation) like LOWER(:text) AND e.category.id IN :categoriesId " +
-            "AND e.paid = :paid")
+            "AND (:paid IS NULL OR e.paid = :paid) AND e.state = 'PUBLISHED'")
     List<Event> findEventsByAllCriteriesWithoutTime(@Param("text") String textAnnotation, @Param("categoriesId") List<Integer> categoriesId,
-                                         @Param("paid") Boolean paid); // public - без времени
+                                         @Param("paid") Boolean paid, Pageable pageable); // public - без времени
 
 }

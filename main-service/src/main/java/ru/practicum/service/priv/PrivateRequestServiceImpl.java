@@ -19,6 +19,7 @@ import ru.practicum.repository.RequestRepository;
 import ru.practicum.repository.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -37,9 +38,15 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
     EventMapper eventMapper;
     @Autowired
     RequestMapper requestMapper;
+
     @Override
-    public List<ParticipationRequestDto> get(Integer userId) {
-        return List.of();
+    public List<ParticipationRequestDto> get(Integer userId) throws EntityNotFoundException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with id " + userId +
+                " was not found"));
+        List<ParticipationRequest> participationRequests = requestRepository.findAllByRequester(user);
+        return participationRequests.stream()
+                .map(this::mapRequest)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -57,7 +64,16 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
     }
 
     @Override
-    public ParticipationRequestDto patch(Integer userId, Integer requestId, ParticipationRequestDto requestDto) {
-        return null;
+    public ParticipationRequestDto patch(Integer userId, Integer requestId) throws EntityNotFoundException {
+        ParticipationRequest request = requestRepository.findById(requestId).orElseThrow(() -> new EntityNotFoundException("Request with id " + requestId +
+                " was not found"));
+        if (request.getRequester().getId().equals(userId)) {
+            request.setStatus(Status.CANCELED);
+        }
+        return requestMapper.requestToDto(request);
+    }
+
+    private ParticipationRequestDto mapRequest(ParticipationRequest request) {
+        return requestMapper.requestToDto(request);
     }
 }

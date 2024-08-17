@@ -35,27 +35,27 @@ public class PrivateEventController {
 
     @PatchMapping("/{userId}/events/{eventId}")
     public EventDtoResponse patch(@PathVariable Integer userId, @PathVariable Integer eventId,
-                                  @RequestBody UpdateEventUserRequest updateEventUserRequest) throws EventPatchException, EntityNotFoundException {
+                                  @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest) throws EventPatchException, EntityNotFoundException {
         return service.patchEvent(userId, eventId, updateEventUserRequest);
     }
 
     @GetMapping("/{userId}/events/{eventId}")
-    public Event getFullEvent(@PathVariable Integer userId, @PathVariable Integer eventId) throws EntityNotFoundException {
+    public EventDtoResponse getFullEvent(@PathVariable Integer userId, @PathVariable Integer eventId) throws EntityNotFoundException {
         return service.getFullEvent(userId, eventId);
     }
 
     @GetMapping("/{userId}/events")
-    public List<EventShortDto> getEvents(@PathVariable Integer userId, @DefaultValue("0") Integer from,
-                                                @DefaultValue("10") Integer size) throws EntityNotFoundException {
+    public List<EventShortDto> getEvents(@PathVariable Integer userId, @RequestParam(defaultValue = "0") Integer from,
+                                                @RequestParam(defaultValue = "10") Integer size) throws EntityNotFoundException {
         return service.getEvents(userId, from, size);
     }
 
-    @GetMapping("/users/{userId}/events/{eventId}/requests")
+    @GetMapping("/{userId}/events/{eventId}/requests")
     public List<ParticipationRequestDto> getRequests(@PathVariable Integer userId, @PathVariable Integer eventId) throws RequestErrorException, EntityNotFoundException {
         return service.getRequests(userId, eventId);
     }
 
-    @PatchMapping("/users/{userId}/events/{eventId}/requests")
+    @PatchMapping("/{userId}/events/{eventId}/requests")
     public EventRequestStatusUpdateResult patchStatus(@PathVariable Integer userId, @PathVariable Integer eventId,
                                                       @RequestBody EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest)
                                                         throws RequestErrorException, EntityNotFoundException {

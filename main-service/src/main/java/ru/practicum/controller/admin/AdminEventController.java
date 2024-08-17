@@ -8,6 +8,7 @@ import ru.practicum.model.event.dto.EventDtoResponse;
 import ru.practicum.model.event.dto.UpdateEventAdminRequest;
 import ru.practicum.service.admin.AdminEventService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -28,7 +29,7 @@ public class AdminEventController {
     }
 
     @PatchMapping("/{eventId}")
-    public EventDtoResponse patch(@PathVariable Integer eventId, @RequestBody UpdateEventAdminRequest updateEventAdminRequest) throws EventPatchException, EntityNotFoundException {
+    public EventDtoResponse patch(@PathVariable Integer eventId, @Valid @RequestBody UpdateEventAdminRequest updateEventAdminRequest) throws EventPatchException, EntityNotFoundException {
         return service.patch(eventId, updateEventAdminRequest);
     }
 }

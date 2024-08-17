@@ -62,7 +62,7 @@ public class PublicEventServiceImpl implements PublicEventService {
                                       String rangeEnd, Boolean onlyAvailable, String sort, Integer from, Integer size,
                                       HttpServletRequest request) throws JsonProcessingException {
         List<Event> events = new ArrayList<>();
-        Pageable pageable = PageRequest.of(from/size, size);
+        Pageable pageable = PageRequest.of(from, size);
 
         if (textAnnotation == null) {
             textAnnotation = "";
@@ -70,9 +70,9 @@ public class PublicEventServiceImpl implements PublicEventService {
         if (categoriesId == null) {
             categoriesId = new ArrayList<>();
         }
-        if (paid == null) {
-            paid = false;
-        }
+//        if (paid == null) {
+//            paid = false;
+//        }
         if (onlyAvailable == null) {
             onlyAvailable = true;
         }
@@ -82,14 +82,16 @@ public class PublicEventServiceImpl implements PublicEventService {
 
         if (rangeStart == null && rangeEnd == null) {
             LocalDateTime moment = LocalDateTime.now();
-            events = eventRepository.findEventsByAllCriteriesWithoutTime("%" + textAnnotation.toLowerCase() + "%", categoriesId, paid);
+            events = eventRepository.findEventsByAllCriteriesWithoutTime("%" + textAnnotation.toLowerCase() +
+                    "%", categoriesId, paid, pageable);
             return events.stream()
                     .map(this::mapToResponse)
                     .collect(Collectors.toList());
         }
         LocalDateTime startMoment = LocalDateTime.parse(rangeStart, df);
         LocalDateTime endMoment = LocalDateTime.parse(rangeEnd, df);
-        events = eventRepository.findEventsByAllCriteries("%" + textAnnotation.toLowerCase() + "%", categoriesId, paid, startMoment, endMoment);
+        events = eventRepository.findEventsByAllCriteries("%" + textAnnotation.toLowerCase() + "%",
+                categoriesId, paid, startMoment, endMoment, pageable);
 
         HttpStatus status = this.sendStatistic(request);
         String uri = baseUri + "/stats?end=2041-01-01 00:00:00&uris=/events";

@@ -1,6 +1,7 @@
 package ru.practicum.service.priv;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,11 +25,13 @@ import ru.practicum.repository.RequestRepository;
 import ru.practicum.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class PrivateEventServiceImpl implements PrivateEventService {
 
     @Autowired
@@ -76,9 +79,12 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
     @Override
-    public Event getFullEvent(Integer userId, Integer eventId) throws EntityNotFoundException {
-        return eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId +
+    public EventDtoResponse getFullEvent(Integer userId, Integer eventId) throws EntityNotFoundException {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId +
                 " was not found"));
+        EventDtoResponse eventDtoResponse = eventMapper.eventToEventDtoResponse(event);
+        eventDtoResponse.setConfirmedRequests(this.fillConfirmedRequests(eventDtoResponse.getId()));
+        return eventDtoResponse;
     }
 
     @Override
@@ -93,7 +99,9 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         }
         this.patchEvent(event, eventDto);
         eventRepository.save(event);
-        return eventMapper.eventToEventDtoResponse(event);
+        EventDtoResponse eventDtoResponse = eventMapper.eventToEventDtoResponse(event);
+        eventDtoResponse.setConfirmedRequests(this.fillConfirmedRequests(eventDtoResponse.getId()));
+        return eventDtoResponse;
     }
 
     @Override
@@ -102,7 +110,8 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                 " was not found"));
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with id " + userId +
                 " was not found"));
-        return requestRepository.findAllByEventAndRequester(event, user).stream()
+        List<ParticipationRequest> participationRequests = requestRepository.findAllByEventAndRequester(event, user);
+        return participationRequests.stream()
                 .map(this::mapRequest)
                 .collect(Collectors.toList());
     }
@@ -116,7 +125,8 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             throw new RequestErrorException("Approve on event with id " + eventId + " is not needed");
         }
         List<Integer> listIdsRequests = eventRequestStatusUpdateRequest.getRequestIds();
-        EventRequestStatusUpdateResult updateResult = this.fillStatus(event, listIdsRequests);
+        String status = eventRequestStatusUpdateRequest.getStatus();
+        EventRequestStatusUpdateResult updateResult = this.fillStatus(event, listIdsRequests, status);
 
         return updateResult;
     }
@@ -166,26 +176,45 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         return eventShortDtoDb;
     }
 
-    private EventRequestStatusUpdateResult fillStatus(Event event, List<Integer> requestIds) throws EntityNotFoundException {
+    private EventRequestStatusUpdateResult fillStatus(Event event, List<Integer> requestIds, String status) throws EntityNotFoundException {
         EventRequestStatusUpdateResult updateResult = new EventRequestStatusUpdateResult();
-        for (Integer id : requestIds) {
-            int count = requestRepository.countConfirmedRequests(event.getId());
-            ParticipationRequest request = requestRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Request with id " + id +
-                    " was not found"));
-            if (count <= event.getParticipantLimit()) {
-                request.setStatus(Status.CONFIRMED);
-                requestRepository.save(request);
-                updateResult.getConfirmedRequests().add(requestMapper.requestToDto(request));
-            } else {
-                request.setStatus(Status.REJECTED);
-                requestRepository.save(request);
-                updateResult.getConfirmedRequests().add(requestMapper.requestToDto(request));
+        updateResult.setConfirmedRequests(new ArrayList<>());
+        updateResult.setRejectedRequests(new ArrayList<>());
+        Status statusEnum = Status.valueOf(status);
+        switch (statusEnum) {
+            case CONFIRMED:
+            for (Integer id : requestIds) {
+                int count = requestRepository.countConfirmedRequests(event.getId());
+                ParticipationRequest request = requestRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Request with id " + id +
+                        " was not found"));
+                if (count <= event.getParticipantLimit()) {
+                    request.setStatus(Status.CONFIRMED);
+                    requestRepository.save(request);
+                    updateResult.getConfirmedRequests().add(requestMapper.requestToDto(request));
+                } else {
+                    request.setStatus(Status.REJECTED);
+                    requestRepository.save(request);
+                    updateResult.getConfirmedRequests().add(requestMapper.requestToDto(request));
+                }
             }
+            case REJECTED:
+                for (Integer id : requestIds) {
+                    ParticipationRequest request = requestRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Request with id " + id +
+                            " was not found"));
+                    request.setStatus(Status.REJECTED);
+                    requestRepository.save(request);
+                    updateResult.getRejectedRequests().add(requestMapper.requestToDto(request));
+                }
+
         }
         return updateResult;
     }
 
     private ParticipationRequestDto mapRequest(ParticipationRequest request) {
         return requestMapper.requestToDto(request);
+    }
+
+    private int fillConfirmedRequests(Integer eventId) {
+        return requestRepository.countConfirmedRequests(eventId);
     }
 }

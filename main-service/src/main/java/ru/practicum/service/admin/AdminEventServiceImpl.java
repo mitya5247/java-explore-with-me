@@ -48,17 +48,17 @@ public class AdminEventServiceImpl implements AdminEventService {
         Pageable pageable = PageRequest.of(from/size, size);
         List<State> stateList = new ArrayList<>();
         List<Event> events = new ArrayList<>();
-        if (usersId == null) {
-            usersId = new ArrayList<>();
-        }
-        if (states == null) {
-            states = new ArrayList<>();
-        } else {
-            stateList = this.convertToState(states);
-        }
-        if (categoriesId == null) {
-            categoriesId = new ArrayList<>();
-        }
+//        if (usersId == null) {
+//            usersId = new ArrayList<>();
+//        }
+//        if (states == null) {
+//            states = new ArrayList<>();
+//        } else {
+//            stateList = this.convertToState(states);
+//        }
+//        if (categoriesId == null) {
+//            categoriesId = new ArrayList<>();
+//        }
         if (start == null && end == null) {
             events = eventRepository.findEventByUsersAndStateAndCategory(usersId, stateList, categoriesId, pageable);
         }
