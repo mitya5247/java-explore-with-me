@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.model.location.dto.LocationDto;
 
+import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
 @Data
@@ -21,6 +22,7 @@ public class UpdateEventUserRequest {
     String eventDate;
     LocationDto location;
     Boolean paid;
+    @PositiveOrZero
     Integer participantLimit;
     Boolean requestModeration;
     String stateAction;

@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.exceptions.EntityNotFoundException;
+import ru.practicum.exceptions.EventAlreadyPublishedException;
 import ru.practicum.exceptions.EventPatchException;
 import ru.practicum.mapper.EventMapper;
 import ru.practicum.mapper.LocationMapper;
@@ -74,14 +75,19 @@ public class AdminEventServiceImpl implements AdminEventService {
     }
 
     @Override
-    public EventDtoResponse patch(Integer eventId, UpdateEventAdminRequest updateEventAdminRequest) throws EntityNotFoundException, EventPatchException {
+    public EventDtoResponse patch(Integer eventId, UpdateEventAdminRequest updateEventAdminRequest) throws EntityNotFoundException, EventPatchException, EventAlreadyPublishedException {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId +
                 " was not found"));
-        if (!event.getEventDate().isAfter(LocalDateTime.now().plusHours(1))) {
-            throw new EventPatchException("Event with id " + eventId + "couldn't be less than 1 hours. Date: " + event.getEventDate());
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        if (updateEventAdminRequest.getEventDate() != null) {
+            LocalDateTime moment = LocalDateTime.parse(updateEventAdminRequest.getEventDate(), df);
+            if (!moment.isAfter(LocalDateTime.now().plusHours(1))) {
+                throw new EventPatchException("Event with id " + eventId + "couldn't be less than 1 hours. Date: " + moment);
+            }
         }
         if (event.getState().equals(State.PUBLISHED)) {
-            throw new EventPatchException("Event with id " + eventId + "already published " + event.getState());
+            throw new EventAlreadyPublishedException("Event with id " + eventId + " already published " + event.getState());
         }
         this.patchEvent(event, updateEventAdminRequest);
         eventRepository.save(event);

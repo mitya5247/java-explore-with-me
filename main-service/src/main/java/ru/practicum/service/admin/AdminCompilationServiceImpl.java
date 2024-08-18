@@ -34,8 +34,13 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
     @Override
     public CompilationResponseDto create(NewCompilationDto newCompilationDto) {
         Compilation compilation = compilationMapper.convertToCompilation(newCompilationDto);
-        List<Event> events = this.findEvents(newCompilationDto.getEvents());
-        compilation.setEvents(events);
+        if (newCompilationDto.getEvents() != null) {
+            List<Event> events = this.findEvents(newCompilationDto.getEvents());
+            compilation.setEvents(events);
+        }
+        if (compilation.getPinned() == null) {
+            compilation.setPinned(false);
+        }
         compilation = compilationRepository.save(compilation);
         return this.convertToResponse(compilation);
     }
@@ -78,12 +83,14 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
     }
 
     private CompilationResponseDto convertToResponse(Compilation compilation) {
-        List<Event> events = compilation.getEvents();
         CompilationResponseDto compilationResponseDto = compilationMapper.compilationToCompilationResponse(compilation);
-        List<EventDtoResponse> eventDtoResponses = events.stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
-        compilationResponseDto.setEvents(eventDtoResponses);
+        if (compilation.getEvents() != null) {
+            List<Event> events = compilation.getEvents();
+            List<EventDtoResponse> eventDtoResponses = events.stream()
+                    .map(this::mapToResponse)
+                    .collect(Collectors.toList());
+            compilationResponseDto.setEvents(eventDtoResponses);
+        }
         return compilationResponseDto;
     }
 }

@@ -25,6 +25,7 @@ import ru.practicum.repository.RequestRepository;
 import ru.practicum.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,7 +55,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     RequestMapper requestMapper;
 
     @Override
-    public EventDtoResponse create(Integer userId, EventDto eventDto) throws EntityNotFoundException {
+    public EventDtoResponse create(Integer userId, EventDto eventDto) throws EntityNotFoundException, EventPatchException {
         Category category = categoryRepository.findById(eventDto.getCategory()).orElseThrow(() -> new EntityNotFoundException("Category with id " + eventDto.getCategory() +
                 " was not found"));
         Event event = eventMapper.eventDtoToEvent(eventDto);
@@ -62,6 +63,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                 " was not found"));
         event.setInitiator(user);
         event.setCategory(category);
+        this.validateTimeEvent(event);
         event = eventRepository.save(event);
         return eventMapper.eventToEventDtoResponse(event);
     }
@@ -91,6 +93,14 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     public EventDtoResponse patchEvent(Integer userId, Integer eventId, UpdateEventUserRequest eventDto) throws EntityNotFoundException, EventPatchException {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId +
                 " was not found"));
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        if (eventDto.getEventDate() != null) {
+            LocalDateTime moment = LocalDateTime.parse(eventDto.getEventDate(), df);
+            if (!moment.isAfter(LocalDateTime.now().plusHours(2))) {
+                throw new EventPatchException("Event with id " + eventId + "couldn't be less than 1 hours. Date: " + moment);
+            }
+        }
         if (!event.getInitiator().getId().equals(userId)) {
             throw new EventPatchException("User with id " + userId + "couldn't patch user's event with id " + event.getInitiator().getId());
         }
@@ -121,10 +131,10 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             throws RequestErrorException, EntityNotFoundException { // подтверждение заявки на участие
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId +
                 " was not found"));
-        if (event.getParticipantLimit() == 0) {
-            throw new RequestErrorException("Approve on event with id " + eventId + " is not needed");
-        }
         List<Integer> listIdsRequests = eventRequestStatusUpdateRequest.getRequestIds();
+        if (event.getParticipantLimit() == 0) {
+            this.confirmRequest(listIdsRequests);
+        }
         String status = eventRequestStatusUpdateRequest.getStatus();
         EventRequestStatusUpdateResult updateResult = this.fillStatus(event, listIdsRequests, status);
 
@@ -216,5 +226,20 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     private int fillConfirmedRequests(Integer eventId) {
         return requestRepository.countConfirmedRequests(eventId);
+    }
+
+    private void confirmRequest(List<Integer> requestIds) throws EntityNotFoundException {
+        for (Integer id : requestIds) {
+            ParticipationRequest request = requestRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Request with id " + id +
+                    " was not found"));
+            request.setStatus(Status.CONFIRMED);
+            requestRepository.save(request);
+        }
+    }
+
+    private void validateTimeEvent(Event event) throws EventPatchException {
+        if (!event.getEventDate().isAfter(LocalDateTime.now().plusHours(2))) {
+            throw new EventPatchException("Event should have date after the 2 hours " + event.getEventDate());
+        }
     }
 }

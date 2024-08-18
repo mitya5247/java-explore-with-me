@@ -4,13 +4,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.exceptions.EventPatchException;
 import ru.practicum.exceptions.RequestErrorException;
-import ru.practicum.model.event.Event;
 import ru.practicum.model.event.dto.*;
 import ru.practicum.model.request.dto.ParticipationRequestDto;
 import ru.practicum.service.priv.PrivateEventService;
@@ -29,7 +27,7 @@ public class PrivateEventController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{userId}/events")
-    public EventDtoResponse create(@PathVariable Integer userId, @Valid @RequestBody EventDto eventDto) throws EntityNotFoundException {
+    public EventDtoResponse create(@PathVariable Integer userId, @Valid @RequestBody EventDto eventDto) throws EntityNotFoundException, EventPatchException {
         return service.create(userId, eventDto);
     }
 

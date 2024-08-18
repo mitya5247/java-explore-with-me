@@ -19,6 +19,7 @@ import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.mapper.EventMapper;
 import ru.practicum.model.event.Event;
 import ru.practicum.model.event.Sort;
+import ru.practicum.model.event.State;
 import ru.practicum.model.event.dto.EventDtoResponse;
 import ru.practicum.repository.EventRepository;
 import ru.practicum.repository.UserRepository;
@@ -108,6 +109,9 @@ public class PublicEventServiceImpl implements PublicEventService {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId +
                 " was not found"));
         this.sendStatistic(request);
+        if (!event.getState().equals(State.PUBLISHED)) {
+            throw new EntityNotFoundException("Event with id " + eventId + " was not found");
+        }
         return this.mapToResponse(event);
     }
 

@@ -6,12 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.exceptions.ApiError;
-import ru.practicum.exceptions.EmailAlreadyExistsException;
-import ru.practicum.exceptions.EntityNotFoundException;
-import ru.practicum.exceptions.RequestErrorException;
+import ru.practicum.exceptions.*;
 
 import javax.validation.ConstraintViolationException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -58,6 +56,51 @@ public class ErrorHandler {
     public ApiError handleConsraintViolationException(final ConstraintViolationException e) {
         List<StackTraceElement> list = List.of(e.getStackTrace());
         log.info("bad request");
+        ApiError apiError = new ApiError();
+        apiError.setErrors(list);
+        if (e.getCause() != null) {
+            apiError.setReason(e.getCause().toString());
+        }
+        apiError.setMessage(e.getMessage());
+        apiError.setStatus(HttpStatus.BAD_REQUEST.toString());
+        return apiError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handlePatchException(final EventPatchException e) {
+        List<StackTraceElement> list = List.of(e.getStackTrace());
+        log.info("bad request");
+        ApiError apiError = new ApiError();
+        apiError.setErrors(list);
+        if (e.getCause() != null) {
+            apiError.setReason(e.getCause().toString());
+        }
+        apiError.setMessage(e.getMessage());
+        apiError.setStatus(HttpStatus.BAD_REQUEST.toString());
+        return apiError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handlePatchException(final SQLException e) {
+        List<StackTraceElement> list = List.of(e.getStackTrace());
+        log.info("duplicate");
+        ApiError apiError = new ApiError();
+        apiError.setErrors(list);
+        if (e.getCause() != null) {
+            apiError.setReason(e.getCause().toString());
+        }
+        apiError.setMessage(e.getMessage());
+        apiError.setStatus(HttpStatus.BAD_REQUEST.toString());
+        return apiError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handlePatchException(final EventAlreadyPublishedException e) {
+        List<StackTraceElement> list = List.of(e.getStackTrace());
+        log.info("duplicate");
         ApiError apiError = new ApiError();
         apiError.setErrors(list);
         if (e.getCause() != null) {

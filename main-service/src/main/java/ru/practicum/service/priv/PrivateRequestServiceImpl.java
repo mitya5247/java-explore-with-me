@@ -59,6 +59,9 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         request.setRequester(user);
         request.setEvent(event);
         request.setStatus(Status.PENDING);
+        if (event.getParticipantLimit() == 0) {
+            request.setStatus(Status.CONFIRMED);
+        }
         request = requestRepository.save(request);
         return requestMapper.requestToDto(request);
     }
