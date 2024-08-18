@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.exceptions.EventAlreadyPublishedException;
 import ru.practicum.exceptions.EventPatchException;
+import ru.practicum.exceptions.EventPublicationException;
 import ru.practicum.mapper.EventMapper;
 import ru.practicum.mapper.LocationMapper;
 import ru.practicum.model.category.Category;
@@ -75,7 +76,7 @@ public class AdminEventServiceImpl implements AdminEventService {
     }
 
     @Override
-    public EventDtoResponse patch(Integer eventId, UpdateEventAdminRequest updateEventAdminRequest) throws EntityNotFoundException, EventPatchException, EventAlreadyPublishedException {
+    public EventDtoResponse patch(Integer eventId, UpdateEventAdminRequest updateEventAdminRequest) throws EntityNotFoundException, EventPatchException, EventAlreadyPublishedException, EventPublicationException {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId +
                 " was not found"));
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -88,6 +89,9 @@ public class AdminEventServiceImpl implements AdminEventService {
         }
         if (event.getState().equals(State.PUBLISHED)) {
             throw new EventAlreadyPublishedException("Event with id " + eventId + " already published " + event.getState());
+        }
+        if (event.getState().equals(State.CANCELED)) {
+            throw new EventPublicationException("Event with id eventId already published event.getState())");
         }
         this.patchEvent(event, updateEventAdminRequest);
         eventRepository.save(event);

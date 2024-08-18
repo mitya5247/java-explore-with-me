@@ -24,7 +24,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     @Query(value = "select e from Event e where (e.initiator.id IS NOT NULL OR e.initiator.id IN :usersId) AND " +
             "(e.state IS NOT NULL OR e.state IN :states) AND (e.category.id IS NOT NULL OR e.category.id IN :categoriesId) AND " +
-            "e.eventDate BETWEEN :startTime AND :endTime")
+            "e.eventDate BETWEEN :startTime AND :endTime order by e.eventDate desc")
     List<Event> findEventByUsersAndStateAndCategoryBetween(@Param("usersId") List<Integer> usersId, @Param("states") List<State> states,
                         @Param("categoriesId") List<Integer> categoriesId,
                         @Param("startTime") LocalDateTime startTime,
@@ -37,14 +37,14 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                                                     @Param("categoriesId") List<Integer> categoriesId, Pageable pageable); // admin - запрос сервиса без времени
 
     @Query(value = "select e from Event e where LOWER(e.annotation) like LOWER(:text) AND e.category.id IN :categoriesId " +
-            "AND (:paid IS NULL OR e.paid = :paid) AND e.state = 'PUBLISHED' AND e.eventDate BETWEEN :start AND :end")
+            "AND (:paid IS NULL OR e.paid = :paid) AND e.state = 'PUBLISHED' AND e.eventDate BETWEEN :start AND :end order by e.eventDate desc")
     List<Event> findEventsByAllCriteries(@Param("text") String textAnnotation, @Param("categoriesId") List<Integer> categoriesId,
                                          @Param("paid") Boolean paid, @Param("start") LocalDateTime start,
                                          @Param("end") LocalDateTime end, Pageable pageable); // сортировка в сервисе , public - со временем
 
 
     @Query(value = "select e from Event e where LOWER(e.annotation) like LOWER(:text) AND e.category.id IN :categoriesId " +
-            "AND (:paid IS NULL OR e.paid = :paid) AND e.state = 'PUBLISHED'")
+            "AND (:paid IS NULL OR e.paid = :paid) AND e.state = 'PUBLISHED' order by e.eventDate desc")
     List<Event> findEventsByAllCriteriesWithoutTime(@Param("text") String textAnnotation, @Param("categoriesId") List<Integer> categoriesId,
                                          @Param("paid") Boolean paid, Pageable pageable); // public - без времени
 

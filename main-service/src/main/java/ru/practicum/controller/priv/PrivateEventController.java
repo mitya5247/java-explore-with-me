@@ -6,9 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.exceptions.EntityNotFoundException;
-import ru.practicum.exceptions.EventPatchException;
-import ru.practicum.exceptions.RequestErrorException;
+import ru.practicum.exceptions.*;
 import ru.practicum.model.event.dto.*;
 import ru.practicum.model.request.dto.ParticipationRequestDto;
 import ru.practicum.service.priv.PrivateEventService;
@@ -33,7 +31,7 @@ public class PrivateEventController {
 
     @PatchMapping("/{userId}/events/{eventId}")
     public EventDtoResponse patch(@PathVariable Integer userId, @PathVariable Integer eventId,
-                                  @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest) throws EventPatchException, EntityNotFoundException {
+                                  @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest) throws EventPatchException, EntityNotFoundException, EventAlreadyPublishedException {
         return service.patchEvent(userId, eventId, updateEventUserRequest);
     }
 
@@ -55,8 +53,8 @@ public class PrivateEventController {
 
     @PatchMapping("/{userId}/events/{eventId}/requests")
     public EventRequestStatusUpdateResult patchStatus(@PathVariable Integer userId, @PathVariable Integer eventId,
-                                                      @RequestBody EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest)
-                                                        throws RequestErrorException, EntityNotFoundException {
+                                                      @RequestBody(required = false) EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest)
+            throws RequestErrorException, EntityNotFoundException, ParticipationsLimitOvercomeException {
         return service.patchStatus(userId, eventId, eventRequestStatusUpdateRequest);
     }
 }

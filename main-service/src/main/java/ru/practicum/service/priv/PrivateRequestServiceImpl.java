@@ -6,10 +6,13 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.exceptions.EntityNotFoundException;
+import ru.practicum.exceptions.ParticipationsLimitOvercomeException;
+import ru.practicum.exceptions.RequestErrorException;
 import ru.practicum.mapper.EventMapper;
 import ru.practicum.mapper.RequestMapper;
 import ru.practicum.mapper.UserMapper;
 import ru.practicum.model.event.Event;
+import ru.practicum.model.event.State;
 import ru.practicum.model.event.Status;
 import ru.practicum.model.request.ParticipationRequest;
 import ru.practicum.model.request.dto.ParticipationRequestDto;
@@ -19,6 +22,7 @@ import ru.practicum.repository.RequestRepository;
 import ru.practicum.repository.UserRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,17 +54,32 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
     }
 
     @Override
-    public ParticipationRequestDto create(Integer userId, Integer eventId) throws EntityNotFoundException {
+    public ParticipationRequestDto create(Integer userId, Integer eventId) throws EntityNotFoundException, ParticipationsLimitOvercomeException, RequestErrorException {
         ParticipationRequest request = new ParticipationRequest();
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with id " + userId +
                 " was not found"));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId +
                 " was not found"));
+        ParticipationRequest lastRequest = requestRepository.findByRequester(user);
+        if (lastRequest != null) {
+            throw new RequestErrorException("request couldn't be created as was made before");
+        }
+        if (!event.getState().equals(State.PUBLISHED)) {
+            throw new RequestErrorException("request couldn't be created on unpublished event");
+        }
+        if (Objects.equals(event.getInitiator().getId(), userId)) {
+            throw new RequestErrorException("request couldn't be created by author event");
+        }
+
         request.setRequester(user);
         request.setEvent(event);
         request.setStatus(Status.PENDING);
         if (event.getParticipantLimit() == 0) {
             request.setStatus(Status.CONFIRMED);
+        }
+        int confirmedRequest = requestRepository.countConfirmedRequests(event.getId());
+        if (event.getParticipantLimit() <= confirmedRequest && event.getParticipantLimit() != 0) {
+            throw new ParticipationsLimitOvercomeException("limit request was reached " + confirmedRequest);
         }
         request = requestRepository.save(request);
         return requestMapper.requestToDto(request);

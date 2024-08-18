@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exceptions.EntityNotFoundException;
+import ru.practicum.exceptions.ParticipationsLimitOvercomeException;
+import ru.practicum.exceptions.RequestErrorException;
 import ru.practicum.model.request.dto.ParticipationRequestDto;
 import ru.practicum.service.priv.PrivateRequestService;
 
@@ -23,7 +25,8 @@ public class PrivateRequestsController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{userId}/requests")
-    public ParticipationRequestDto create(@PathVariable Integer userId, @RequestParam Integer eventId) throws EntityNotFoundException {
+    public ParticipationRequestDto create(@PathVariable Integer userId, @RequestParam Integer eventId) throws
+            EntityNotFoundException, ParticipationsLimitOvercomeException, RequestErrorException {
         return service.create(userId, eventId);
     }
 

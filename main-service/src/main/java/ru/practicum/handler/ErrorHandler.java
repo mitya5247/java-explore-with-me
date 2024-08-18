@@ -28,15 +28,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiError handleConflictException(final RequestErrorException e) {
-        List<StackTraceElement> list = List.of(e.getStackTrace());
-        log.info("error request exception");
-        return new ApiError(list, e.getMessage(), e.getCause().toString(), HttpStatus.CONFLICT.toString(),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleNotFoundException(final EntityNotFoundException e) {
         List<StackTraceElement> list = List.of(e.getStackTrace());
@@ -108,6 +99,51 @@ public class ErrorHandler {
         }
         apiError.setMessage(e.getMessage());
         apiError.setStatus(HttpStatus.BAD_REQUEST.toString());
+        return apiError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleParticipationOvercomeException(final ParticipationsLimitOvercomeException e) {
+        List<StackTraceElement> list = List.of(e.getStackTrace());
+        log.info("limit is overcome");
+        ApiError apiError = new ApiError();
+        apiError.setErrors(list);
+        if (e.getCause() != null) {
+            apiError.setReason(e.getCause().toString());
+        }
+        apiError.setMessage(e.getMessage());
+        apiError.setStatus(HttpStatus.BAD_REQUEST.toString());
+        return apiError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handlePublicationException(final EventPublicationException e) {
+        List<StackTraceElement> list = List.of(e.getStackTrace());
+        log.info("event is already canceled");
+        ApiError apiError = new ApiError();
+        apiError.setErrors(list);
+        if (e.getCause() != null) {
+            apiError.setReason(e.getCause().toString());
+        }
+        apiError.setMessage(e.getMessage());
+        apiError.setStatus(HttpStatus.BAD_REQUEST.toString());
+        return apiError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleConflictException(final RequestErrorException e) {
+        List<StackTraceElement> list = List.of(e.getStackTrace());
+        log.info("event is already canceled");
+        ApiError apiError = new ApiError();
+        apiError.setErrors(list);
+        if (e.getCause() != null) {
+            apiError.setReason(e.getCause().toString());
+        }
+        apiError.setMessage(e.getMessage());
+        apiError.setStatus(HttpStatus.CONFLICT.toString());
         return apiError;
     }
 }
