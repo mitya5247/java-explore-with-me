@@ -3,13 +3,13 @@ package ru.practicum.service.publ;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.EndpointHitDto;
@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +49,7 @@ public class PublicEventServiceImpl implements PublicEventService {
     @Autowired
     StatsClient client;
     String baseUri;
+    HashMap<Integer, Event> eventHashMap = new HashMap<>();
 
     @Autowired
     RequestRepository requestRepository;
@@ -65,6 +68,7 @@ public class PublicEventServiceImpl implements PublicEventService {
         this.requestRepository = requestRepository;
     }
 
+    @SneakyThrows
     @Override
     public List<EventDtoResponse> get(String textAnnotation, List<Integer> categoriesId, Boolean paid, String rangeStart,
                                       String rangeEnd, Boolean onlyAvailable, String sort, Integer from, Integer size,
@@ -104,14 +108,16 @@ public class PublicEventServiceImpl implements PublicEventService {
         events = eventRepository.findEventsByAllCriteries("%" + textAnnotation.toLowerCase() + "%",
                 categoriesId, paid, startMoment, endMoment, pageable);
 
-        HttpStatus status = this.sendStatistic(request);
-        String uri = baseUri + "/stats?end=2041-01-01 00:00:00&uris=/events";
-        ResponseEntity<Object> response = client.getRequest(baseUri + "/stats?end=2041-01-01 00:00:00&uris=/events");
-        List<ViewStats> list = this.getStat(uri);
+        this.sendStatisticWithManyEvents(request, events);
+//        String uri = baseUri + "/stats?end=2041-01-01 00:00:00&uris=/events";
+//        ResponseEntity<Object> response = client.getRequest(baseUri + "/stats?end=2041-01-01 00:00:00&uris=/events");
+//        List<ViewStats> list = this.getStat(uri);
 
         return events.stream()
                 .map(this::mapToResponse)
                 .map(this::countRequests)
+                .map(this::getStat)
+                .sorted(Comparator.comparing(EventDtoResponse::getViews))
                 .collect(Collectors.toList());
     }
 
@@ -119,14 +125,17 @@ public class PublicEventServiceImpl implements PublicEventService {
     public EventDtoResponse getEvent(Integer eventId, HttpServletRequest request) throws EntityNotFoundException, JsonProcessingException {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId +
                 " was not found"));
-        this.sendStatistic(request);
         if (!event.getState().equals(State.PUBLISHED)) {
             throw new EntityNotFoundException("Event with id " + eventId + " was not found");
         }
         EventDtoResponse eventDtoResponse = this.mapToResponse(event);
         this.countRequests(eventDtoResponse);
-        String uri = baseUri + "/stats?end=2041-01-01 00:00:00&uris=/events/" + eventId;
+        String uri = baseUri + "/stats?end=2041-01-01 00:00:00&unique=true&&uris=/events/" + eventId;
+        this.sendStatistic(request, "/events/" + event.getId());
         List<ViewStats> stats = this.getStat(uri);
+        List<Event> events = new ArrayList<>();
+        events.add(event);
+        this.parseViewsForEvent(stats, eventDtoResponse);
         return eventDtoResponse;
     }
 
@@ -134,20 +143,25 @@ public class PublicEventServiceImpl implements PublicEventService {
         return eventMapper.eventToEventDtoResponse(event);
     }
 
-    private HttpStatus sendStatistic(HttpServletRequest request) {
+    private void sendStatisticWithManyEvents(HttpServletRequest request, List<Event> events) {
+        for (Event event : events) {
+            String eventUri = "/events/" + event.getId();
+            this.sendStatistic(request, eventUri);
+        }
+    }
 
+    private void sendStatistic(HttpServletRequest request, String uri) {
         EndpointHitDto endpointHitDto = new EndpointHitDto();
         endpointHitDto.setIp(request.getRemoteAddr());
         endpointHitDto.setApp("ewm-main-service");
-        endpointHitDto.setUri(request.getRequestURI());
+        endpointHitDto.setUri(uri);
         endpointHitDto.setTimestamp(LocalDateTime.now().format(df));
-
-        String uri = baseUri + "/hit";
-        ResponseEntity<Object> response = client.postRequest(uri, endpointHitDto);
-        return response.getStatusCode();
+        String sendUri = baseUri + "/hit";
+        client.postRequest(sendUri, endpointHitDto);
     }
 
-    private List<ViewStats> getStat(String uri) throws JsonProcessingException {
+    @SneakyThrows
+    private List<ViewStats> getStat(String uri) {
         ResponseEntity<Object> response = client.getRequest(uri);
         Object body = response.getBody();
         String json = mapper.writeValueAsString(body);
@@ -161,4 +175,39 @@ public class PublicEventServiceImpl implements PublicEventService {
         eventDtoResponse.setConfirmedRequests(requestRepository.countConfirmedRequests(eventDtoResponse.getId()));
         return eventDtoResponse;
     }
+
+    private EventDtoResponse getStat(EventDtoResponse eventDtoResponse) {
+        String uri = baseUri + "/stats?end=2041-01-01 00:00:00&unique=true&&uris=/events/" + eventDtoResponse.getId();
+        List<ViewStats> list = this.getStat(uri);
+        this.parseViewsForEvent(list, eventDtoResponse);
+        return eventDtoResponse;
+    }
+
+//    private void parseViewsForEvents(List<ViewStats> viewStatsList) {
+//        for (ViewStats stats : viewStatsList) {
+//            String uri = stats.getUri();
+//            String[] splitString = uri.split("/");
+//            int index = Integer.parseInt(splitString[2]);
+//            Event event = eventHashMap.get(index);
+//            EventDtoResponse eventDtoResponse = eventMapper.eventToEventDtoResponse(event);
+//            eventDtoResponse.setViews(stats.getHits());
+//        }
+//    }
+
+    private void parseViewsForEvent(List<ViewStats> viewStatsList, EventDtoResponse eventDtoResponse) {
+        for (ViewStats stats : viewStatsList) {
+            String uri = stats.getUri();
+            String[] splitString = uri.split("/");
+            int index = Integer.parseInt(splitString[2]);
+            eventDtoResponse.setViews(stats.getHits());
+        }
+    }
+
+//    private HashMap<Integer, Event> convertToEventMap(List<Event> events) {
+//        for (Event event : events) {
+//            eventHashMap.put(event.getId(), event);
+//        }
+//        return eventHashMap;
+//    }
+
 }

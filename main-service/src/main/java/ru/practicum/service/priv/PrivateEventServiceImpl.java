@@ -123,7 +123,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                 " was not found"));
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with id " + userId +
                 " was not found"));
-        List<ParticipationRequest> participationRequests = requestRepository.findAllByEventAndRequester(event, user);
+        List<ParticipationRequest> participationRequests = requestRepository.findAllByEvent(event);
         return participationRequests.stream()
                 .map(this::mapRequest)
                 .collect(Collectors.toList());

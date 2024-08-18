@@ -31,7 +31,8 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                         @Param("endTime") LocalDateTime endTime, Pageable pageable);  // admin - запрос сервиса со временем
 
     @Query(value = "select e from Event e where (e.initiator.id IN :usersId OR e.initiator.id IS NOT NULL) AND " +
-            "(e.state IN :states OR e.state IS NOT NULL) AND (e.category.id IN :categoriesId OR e.category.id IS NOT NULL)")
+            "(e.state IN :states OR e.state IS NOT NULL) AND (e.category.id IN :categoriesId OR e.category.id IS NOT NULL) " +
+            "order by e.eventDate desc")
     List<Event> findEventByUsersAndStateAndCategory(@Param("usersId") List<Integer> usersId,
                                                     @Param("states") List<State> states,
                                                     @Param("categoriesId") List<Integer> categoriesId, Pageable pageable); // admin - запрос сервиса без времени

@@ -1,12 +1,17 @@
 package ru.practicum.service.admin;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ru.practicum.StatsClient;
+import ru.practicum.ViewStats;
 import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.exceptions.EventAlreadyPublishedException;
 import ru.practicum.exceptions.EventPatchException;
@@ -44,6 +49,8 @@ public class AdminEventServiceImpl implements AdminEventService {
     LocationMapper locationMapper;
     @Autowired
     RequestRepository requestRepository;
+    @Autowired
+    StatsClient client;
 
     @Override
     public List<EventDtoResponse> get(List<Integer> usersId, List<String> states, List<Integer> categoriesId, String start,
@@ -53,17 +60,6 @@ public class AdminEventServiceImpl implements AdminEventService {
         Pageable pageable = PageRequest.of(from/size, size);
         List<State> stateList = new ArrayList<>();
         List<Event> events = new ArrayList<>();
-//        if (usersId == null) {
-//            usersId = new ArrayList<>();
-//        }
-//        if (states == null) {
-//            states = new ArrayList<>();
-//        } else {
-//            stateList = this.convertToState(states);
-//        }
-//        if (categoriesId == null) {
-//            categoriesId = new ArrayList<>();
-//        }
         if (start == null && end == null) {
             events = eventRepository.findEventByUsersAndStateAndCategory(usersId, stateList, categoriesId, pageable);
         }
@@ -76,6 +72,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         return events.stream()
                 .map(this::mapToResponse)
                 .map(this::countRequests)
+                .map(this::getStat)
                 .collect(Collectors.toList());
     }
 
@@ -157,5 +154,36 @@ public class AdminEventServiceImpl implements AdminEventService {
     private EventDtoResponse countRequests(EventDtoResponse eventDtoResponse) {
         eventDtoResponse.setConfirmedRequests(requestRepository.countConfirmedRequests(eventDtoResponse.getId()));
         return eventDtoResponse;
+    }
+
+    private EventDtoResponse getStat(EventDtoResponse eventDtoResponse) {
+        String uri = "http://localhost:9090/stats?end=2041-01-01 00:00:00&unique=true&&uris=/events/" + eventDtoResponse.getId();
+        List<ViewStats> list = this.getStat(uri);
+        this.parseViewsForEvent(list, eventDtoResponse);
+        if (eventDtoResponse.getViews() == null) {
+            eventDtoResponse.setViews(0L);
+        }
+        return eventDtoResponse;
+    }
+
+    @SneakyThrows
+    private List<ViewStats> getStat(String uri) {
+        ObjectMapper mapper = new ObjectMapper();
+        ResponseEntity<Object> response = client.getRequest(uri);
+        Object body = response.getBody();
+        String json = mapper.writeValueAsString(body);
+
+        List<ViewStats> responseList = mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(List.class, ViewStats.class));
+
+        return responseList;
+    }
+
+    private void parseViewsForEvent(List<ViewStats> viewStatsList, EventDtoResponse eventDtoResponse) {
+        for (ViewStats stats : viewStatsList) {
+            String uri = stats.getUri();
+            String[] splitString = uri.split("/");
+            int index = Integer.parseInt(splitString[2]);
+            eventDtoResponse.setViews(stats.getHits());
+        }
     }
 }
