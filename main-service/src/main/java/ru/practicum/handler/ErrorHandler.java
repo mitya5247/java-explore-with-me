@@ -146,4 +146,19 @@ public class ErrorHandler {
         apiError.setStatus(HttpStatus.CONFLICT.toString());
         return apiError;
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleValidationException(final ValidationException e) {
+        List<StackTraceElement> list = List.of(e.getStackTrace());
+        log.info("event is already canceled");
+        ApiError apiError = new ApiError();
+        apiError.setErrors(list);
+        if (e.getCause() != null) {
+            apiError.setReason(e.getCause().toString());
+        }
+        apiError.setMessage(e.getMessage());
+        apiError.setStatus(HttpStatus.BAD_REQUEST.toString());
+        return apiError;
+    }
 }

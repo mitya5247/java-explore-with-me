@@ -21,6 +21,7 @@ import ru.practicum.model.event.dto.EventDtoResponse;
 import ru.practicum.model.event.dto.UpdateEventAdminRequest;
 import ru.practicum.repository.CategoryRepository;
 import ru.practicum.repository.EventRepository;
+import ru.practicum.repository.RequestRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,6 +42,8 @@ public class AdminEventServiceImpl implements AdminEventService {
     EventMapper eventMapper;
     @Autowired
     LocationMapper locationMapper;
+    @Autowired
+    RequestRepository requestRepository;
 
     @Override
     public List<EventDtoResponse> get(List<Integer> usersId, List<String> states, List<Integer> categoriesId, String start,
@@ -72,6 +75,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         }
         return events.stream()
                 .map(this::mapToResponse)
+                .map(this::countRequests)
                 .collect(Collectors.toList());
     }
 
@@ -148,5 +152,10 @@ public class AdminEventServiceImpl implements AdminEventService {
             list.add(State.valueOf(stateString));
         }
         return list;
+    }
+
+    private EventDtoResponse countRequests(EventDtoResponse eventDtoResponse) {
+        eventDtoResponse.setConfirmedRequests(requestRepository.countConfirmedRequests(eventDtoResponse.getId()));
+        return eventDtoResponse;
     }
 }

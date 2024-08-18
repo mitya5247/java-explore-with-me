@@ -192,7 +192,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     private EventShortDtoDb countRequests(EventShortDtoDb eventShortDtoDb) {
 //        ConfirmedRequest confirmedRequest = requestRepository.countConfRequests(eventShortDtoDb.getId());
-        eventShortDtoDb.setConfirmedRequests(requestRepository.countConfirmedRequests(eventShortDtoDb.getId()));
+        eventShortDtoDb.setConfirmedRequests(requestRepository.countRequests(eventShortDtoDb.getId()));
         return eventShortDtoDb;
     }
 
@@ -204,7 +204,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         switch (statusEnum) {
             case CONFIRMED:
             for (Integer id : requestIds) {
-                int count = requestRepository.countConfirmedRequests(event.getId());
+                int count = requestRepository.countRequests(event.getId());
                 ParticipationRequest request = requestRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Request with id " + id +
                         " was not found"));
                 if (count < event.getParticipantLimit()) {

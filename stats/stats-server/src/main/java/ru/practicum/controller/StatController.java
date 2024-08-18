@@ -30,13 +30,14 @@ public class StatController {
     }
 
     @GetMapping("/stats")
-    public String getStat(@RequestParam(defaultValue = "2021-01-01 00:00:00") String start,
+    public List<ViewStats> getStat(@RequestParam(defaultValue = "2021-01-01 00:00:00") String start,
                                    @RequestParam(defaultValue = "2021-01-01 00:00:00") String end,
                                    @RequestParam(required = false) List<String> uris,
                                    @RequestParam(defaultValue = "false", required = false) Boolean unique) throws JsonProcessingException {
-//        String json = mapper.writeValueAsString(service.getStat(start, end, uris, unique));
-        List<ViewStats> list = service.getStat(start, end, uris, unique);
-        String json = mapper.writeValueAsString(list);
-        return json;
+        String json = mapper.writeValueAsString(service.getStat(start, end, uris, unique));
+//        List<ViewStats> list = service.getStat(start, end, uris, unique);
+//        String json = mapper.writeValueAsString(list);
+//        return json;
+        return service.getStat(start, end, uris, unique);
     }
 }

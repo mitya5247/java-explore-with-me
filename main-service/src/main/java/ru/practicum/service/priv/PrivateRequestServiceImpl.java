@@ -77,7 +77,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         if (event.getParticipantLimit() == 0) {
             request.setStatus(Status.CONFIRMED);
         }
-        int confirmedRequest = requestRepository.countConfirmedRequests(event.getId());
+        int confirmedRequest = requestRepository.countRequests(event.getId());
         if (event.getParticipantLimit() <= confirmedRequest && event.getParticipantLimit() != 0) {
             throw new ParticipationsLimitOvercomeException("limit request was reached " + confirmedRequest);
         }
