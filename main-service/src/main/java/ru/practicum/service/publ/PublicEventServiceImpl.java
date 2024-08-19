@@ -19,7 +19,6 @@ import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.exceptions.ValidationException;
 import ru.practicum.mapper.EventMapper;
 import ru.practicum.model.event.Event;
-import ru.practicum.model.event.Sort;
 import ru.practicum.model.event.State;
 import ru.practicum.model.event.dto.EventDtoResponse;
 import ru.practicum.repository.EventRepository;
