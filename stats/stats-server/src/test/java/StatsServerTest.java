@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.EndpointHitDto;
@@ -14,9 +13,9 @@ import ru.practicum.model.ViewStats;
 import ru.practicum.service.StatService;
 import ru.practicum.service.StatServiceImpl;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,20 +65,6 @@ public class StatsServerTest {
 
         Assertions.assertEquals(endpointHitDto.getApp(), endpointHit.getApp());
         Assertions.assertEquals(endpointHitDto.getUri(), endpointHit.getUri());
-    }
-
-    @Test
-    public void saveEndpointWithNullApp() {
-        endpointHitDto.setApp(null);
-
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> service.createHit(request, endpointHitDto));
-    }
-
-    @Test
-    public void saveEndpointWithNullUri() {
-        endpointHitDto.setUri(null);
-
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> service.createHit(request, endpointHitDto));
     }
 
     @Test

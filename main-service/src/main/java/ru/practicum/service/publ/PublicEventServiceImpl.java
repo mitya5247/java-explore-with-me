@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +48,6 @@ public class PublicEventServiceImpl implements PublicEventService {
     @Autowired
     StatsClient client;
     String baseUri;
-    HashMap<Integer, Event> eventHashMap = new HashMap<>();
 
     @Autowired
     RequestRepository requestRepository;
