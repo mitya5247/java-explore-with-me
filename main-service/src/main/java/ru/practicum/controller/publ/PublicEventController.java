@@ -33,7 +33,7 @@ public class PublicEventController {
     }
 
     @GetMapping("/{eventId}")
-    public EventDtoResponse getEvent(@PathVariable Integer eventId, HttpServletRequest request) throws EntityNotFoundException, JsonProcessingException {
+    public EventDtoResponse getEvent(@PathVariable Integer eventId, HttpServletRequest request) throws EntityNotFoundException {
         return service.getEvent(eventId, request);
     }
 }

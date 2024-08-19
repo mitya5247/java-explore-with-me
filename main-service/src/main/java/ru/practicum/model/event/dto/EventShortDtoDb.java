@@ -23,5 +23,5 @@ public class EventShortDtoDb {
     User initiator;
     Boolean paid;
     String title;
-    Integer views;
+    Long views;
 }

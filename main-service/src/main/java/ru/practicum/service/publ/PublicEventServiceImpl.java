@@ -116,7 +116,7 @@ public class PublicEventServiceImpl implements PublicEventService {
     }
 
     @Override
-    public EventDtoResponse getEvent(Integer eventId, HttpServletRequest request) throws EntityNotFoundException, JsonProcessingException {
+    public EventDtoResponse getEvent(Integer eventId, HttpServletRequest request) throws EntityNotFoundException {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId +
                 " was not found"));
         if (!event.getState().equals(State.PUBLISHED)) {
@@ -179,9 +179,6 @@ public class PublicEventServiceImpl implements PublicEventService {
 
     private void parseViewsForEvent(List<ViewStats> viewStatsList, EventDtoResponse eventDtoResponse) {
         for (ViewStats stats : viewStatsList) {
-            String uri = stats.getUri();
-            String[] splitString = uri.split("/");
-            int index = Integer.parseInt(splitString[2]);
             eventDtoResponse.setViews(stats.getHits());
         }
     }

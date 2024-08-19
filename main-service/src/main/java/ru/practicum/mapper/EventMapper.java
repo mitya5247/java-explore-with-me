@@ -4,7 +4,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
-import org.mapstruct.factory.Mappers;
 import ru.practicum.model.event.Event;
 import ru.practicum.model.event.State;
 import ru.practicum.model.event.dto.EventDto;
@@ -17,8 +16,6 @@ import java.time.format.DateTimeFormatter;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface EventMapper {
-
-    LocationMapper locationMapper = Mappers.getMapper(LocationMapper.class);
 
     DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 

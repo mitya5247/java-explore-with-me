@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.exceptions.ParticipationsLimitOvercomeException;
 import ru.practicum.exceptions.RequestErrorException;
-import ru.practicum.mapper.EventMapper;
 import ru.practicum.mapper.RequestMapper;
-import ru.practicum.mapper.UserMapper;
 import ru.practicum.model.event.Event;
 import ru.practicum.model.event.State;
 import ru.practicum.model.event.Status;
@@ -37,10 +35,6 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
     @Autowired
     RequestRepository requestRepository;
     @Autowired
-    UserMapper userMapper;
-    @Autowired
-    EventMapper eventMapper;
-    @Autowired
     RequestMapper requestMapper;
 
     @Override
@@ -54,7 +48,8 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
     }
 
     @Override
-    public ParticipationRequestDto create(Integer userId, Integer eventId) throws EntityNotFoundException, ParticipationsLimitOvercomeException, RequestErrorException {
+    public ParticipationRequestDto create(Integer userId, Integer eventId) throws EntityNotFoundException,
+            ParticipationsLimitOvercomeException, RequestErrorException {
         ParticipationRequest request = new ParticipationRequest();
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with id " + userId +
                 " was not found"));

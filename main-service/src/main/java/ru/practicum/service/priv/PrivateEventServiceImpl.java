@@ -1,11 +1,18 @@
 package ru.practicum.service.priv;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
+import lombok.SneakyThrows;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ru.practicum.StatsClient;
+import ru.practicum.ViewStats;
 import ru.practicum.exceptions.*;
 import ru.practicum.mapper.*;
 import ru.practicum.model.category.Category;
@@ -29,8 +36,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 @Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PrivateEventServiceImpl implements PrivateEventService {
 
     @Autowired
@@ -46,16 +53,30 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Autowired
     LocationMapper locationMapper;
     @Autowired
-    UserMapper userMapper;
-    @Autowired
-    CategoryMapper categoryMapper;
-    @Autowired
     RequestMapper requestMapper;
+    String baseUri;
+    @Autowired
+    StatsClient client;
+
+    public PrivateEventServiceImpl(EventRepository eventRepository, UserRepository userRepository,
+                                   CategoryRepository categoryRepository, RequestRepository requestRepository,
+                                   EventMapper eventMapper, LocationMapper locationMapper, RequestMapper requestMapper,
+                                   @Value("${stats-uri}") String baseUri, StatsClient client) {
+        this.eventRepository = eventRepository;
+        this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
+        this.requestRepository = requestRepository;
+        this.eventMapper = eventMapper;
+        this.locationMapper = locationMapper;
+        this.requestMapper = requestMapper;
+        this.baseUri = baseUri;
+        this.client = client;
+    }
 
     @Override
     public EventDtoResponse create(Integer userId, EventDto eventDto) throws EntityNotFoundException, EventPatchException {
-        Category category = categoryRepository.findById(eventDto.getCategory()).orElseThrow(() -> new EntityNotFoundException("Category with id " + eventDto.getCategory() +
-                " was not found"));
+        Category category = categoryRepository.findById(eventDto.getCategory()).orElseThrow(() -> new
+                EntityNotFoundException("Category with id " + eventDto.getCategory() + " was not found"));
         Event event = eventMapper.eventDtoToEvent(eventDto);
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with id " + userId +
                 " was not found"));
@@ -73,7 +94,8 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                 " was not found"));
         List<EventShortDto> list = eventRepository.findAllByInitiator(user, pageable).stream()
                 .map(this::countRequests)
-                .map(eventShortDtoDb -> eventMapper.eventShortDbToShort(eventShortDtoDb))
+                .map(eventMapper::eventShortDbToShort)
+                .map(this::getStatForShortEvent)
                 .collect(Collectors.toList());
         return list;
     }
@@ -84,11 +106,13 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                 " was not found"));
         EventDtoResponse eventDtoResponse = eventMapper.eventToEventDtoResponse(event);
         eventDtoResponse.setConfirmedRequests(this.fillConfirmedRequests(eventDtoResponse.getId()));
+        this.getStat(eventDtoResponse);
         return eventDtoResponse;
     }
 
     @Override
-    public EventDtoResponse patchEvent(Integer userId, Integer eventId, UpdateEventUserRequest eventDto) throws EntityNotFoundException, EventPatchException, EventAlreadyPublishedException {
+    public EventDtoResponse patchEvent(Integer userId, Integer eventId, UpdateEventUserRequest eventDto) throws EntityNotFoundException,
+            EventPatchException, EventAlreadyPublishedException {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId +
                 " was not found"));
         if (event.getState().equals(State.PUBLISHED)) {
@@ -118,10 +142,8 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
     @Override
-    public List<ParticipationRequestDto> getRequests(Integer userId, Integer eventId) throws EntityNotFoundException, RequestErrorException {
+    public List<ParticipationRequestDto> getRequests(Integer userId, Integer eventId) throws EntityNotFoundException {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId +
-                " was not found"));
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with id " + userId +
                 " was not found"));
         List<ParticipationRequest> participationRequests = requestRepository.findAllByEvent(event);
         return participationRequests.stream()
@@ -131,7 +153,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     @Override
     public EventRequestStatusUpdateResult patchStatus(Integer userId, Integer eventId, EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest)
-            throws RequestErrorException, EntityNotFoundException, ParticipationsLimitOvercomeException { // подтверждение заявки на участие
+            throws RequestErrorException, ParticipationsLimitOvercomeException { // подтверждение заявки на участие
         try {
 
             Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId +
@@ -146,7 +168,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
             return updateResult;
         } catch (NullPointerException | EntityNotFoundException e) {
-            throw new RequestErrorException("Event with id " + eventId + " was not found");
+            throw new RequestErrorException("Event with id " + eventId + " was already accepted");
         }
     }
 
@@ -191,11 +213,12 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
     private EventShortDtoDb countRequests(EventShortDtoDb eventShortDtoDb) {
-        eventShortDtoDb.setConfirmedRequests(requestRepository.countRequests(eventShortDtoDb.getId()));
+        eventShortDtoDb.setConfirmedRequests(requestRepository.countRequests(eventShortDtoDb.getId())); // было count
         return eventShortDtoDb;
     }
 
-    private EventRequestStatusUpdateResult fillStatus(Event event, List<Integer> requestIds, String status) throws EntityNotFoundException, ParticipationsLimitOvercomeException {
+    private EventRequestStatusUpdateResult fillStatus(Event event, List<Integer> requestIds, String status)
+            throws EntityNotFoundException, ParticipationsLimitOvercomeException {
         EventRequestStatusUpdateResult updateResult = new EventRequestStatusUpdateResult();
         updateResult.setConfirmedRequests(new ArrayList<>());
         updateResult.setRejectedRequests(new ArrayList<>());
@@ -249,6 +272,50 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     private void validateTimeEvent(Event event) throws EventPatchException {
         if (!event.getEventDate().isAfter(LocalDateTime.now().plusHours(2))) {
             throw new EventPatchException("Event should have date after the 2 hours " + event.getEventDate());
+        }
+    }
+
+    private EventDtoResponse getStat(EventDtoResponse eventDtoResponse) {
+        String uri = baseUri + "/stats?end=2041-01-01 00:00:00&unique=true&&uris=/events/" + eventDtoResponse.getId();
+        List<ViewStats> list = this.getStat(uri);
+        this.parseViewsForEvent(list, eventDtoResponse);
+        if (eventDtoResponse.getViews() == null) {
+            eventDtoResponse.setViews(0L);
+        }
+        return eventDtoResponse;
+    }
+
+    private EventShortDto getStatForShortEvent(EventShortDto shortDto) {
+        String uri = baseUri + "/stats?end=2041-01-01 00:00:00&unique=true&&uris=/events/" + shortDto.getId();
+        List<ViewStats> list = this.getStat(uri);
+        this.parseViewsForShortEvent(list, shortDto);
+        if (shortDto.getViews() == null) {
+            shortDto.setViews(0L);
+        }
+        return shortDto;
+    }
+
+    @SneakyThrows
+    private List<ViewStats> getStat(String uri) {
+        ObjectMapper mapper = new ObjectMapper();
+        ResponseEntity<Object> response = client.getRequest(uri);
+        Object body = response.getBody();
+        String json = mapper.writeValueAsString(body);
+
+        List<ViewStats> responseList = mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(List.class, ViewStats.class));
+
+        return responseList;
+    }
+
+    private void parseViewsForEvent(List<ViewStats> viewStatsList, EventDtoResponse eventDtoResponse) {
+        for (ViewStats stats : viewStatsList) {
+              eventDtoResponse.setViews(stats.getHits());
+        }
+    }
+
+    private void parseViewsForShortEvent(List<ViewStats> viewStatsList, EventShortDto eventShortDto) {
+        for (ViewStats stats : viewStatsList) {
+            eventShortDto.setViews(stats.getHits());
         }
     }
 }

@@ -16,7 +16,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
 
     @Query(value = "select new ru.practicum.model.event.dto.EventShortDtoDb(e.annotation, e.category, 0, e.eventDate, e.id, " +
-            "e.initiator, e.paid, e.title, 0) from Event as e where e.initiator = :initiator")
+            "e.initiator, e.paid, e.title, 0L) from Event as e where e.initiator = :initiator")
     List<EventShortDtoDb> findAllByInitiator(@Param("initiator") User user1, Pageable pageable); // добавидть сортировку и добавить проекцию на этот класс для преобр в объект
 
     @Query(value = "select e from Event e where (e.initiator.id IN :usersId) AND " +
@@ -49,6 +49,6 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     List<Event> findAllByIdIn(List<Integer> eventId); // поиск для подборок
 
     @Query(value = "select e from Event e")
-    List<Event> findByEmptyParametres(Pageable pageable);
+    List<Event> findByEmptyParametres(Pageable pageable); // поиск событий для пустых параметров
 
 }

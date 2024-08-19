@@ -2,8 +2,8 @@ package ru.practicum.service.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -35,8 +35,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminEventServiceImpl implements AdminEventService {
 
     @Autowired
@@ -51,6 +50,19 @@ public class AdminEventServiceImpl implements AdminEventService {
     RequestRepository requestRepository;
     @Autowired
     StatsClient client;
+    String baseUri;
+
+    public AdminEventServiceImpl(EventRepository eventRepository, CategoryRepository categoryRepository,
+                                 EventMapper eventMapper, LocationMapper locationMapper, RequestRepository requestRepository,
+                                 StatsClient client, @Value("${stats-uri}") String baseUri) {
+        this.eventRepository = eventRepository;
+        this.categoryRepository = categoryRepository;
+        this.eventMapper = eventMapper;
+        this.locationMapper = locationMapper;
+        this.requestRepository = requestRepository;
+        this.client = client;
+        this.baseUri = baseUri;
+    }
 
     @Override
     public List<EventDtoResponse> get(List<Integer> usersId, List<String> states, List<Integer> categoriesId, String start,
@@ -98,7 +110,8 @@ public class AdminEventServiceImpl implements AdminEventService {
     }
 
     @Override
-    public EventDtoResponse patch(Integer eventId, UpdateEventAdminRequest updateEventAdminRequest) throws EntityNotFoundException, EventPatchException, EventAlreadyPublishedException, EventPublicationException {
+    public EventDtoResponse patch(Integer eventId, UpdateEventAdminRequest updateEventAdminRequest) throws EntityNotFoundException,
+            EventPatchException, EventAlreadyPublishedException, EventPublicationException {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId +
                 " was not found"));
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -164,21 +177,13 @@ public class AdminEventServiceImpl implements AdminEventService {
         return eventMapper.eventToEventDtoResponse(event);
     }
 
-    private List<State> convertToState(List<String> stateStringList) {
-        List<State> list = new ArrayList<>();
-        for (String stateString : stateStringList) {
-            list.add(State.valueOf(stateString));
-        }
-        return list;
-    }
-
     private EventDtoResponse countRequests(EventDtoResponse eventDtoResponse) {
         eventDtoResponse.setConfirmedRequests(requestRepository.countConfirmedRequests(eventDtoResponse.getId()));
         return eventDtoResponse;
     }
 
     private EventDtoResponse getStat(EventDtoResponse eventDtoResponse) {
-        String uri = "http://localhost:9090/stats?end=2041-01-01 00:00:00&unique=true&&uris=/events/" + eventDtoResponse.getId();
+        String uri = baseUri + "/stats?end=2041-01-01 00:00:00&unique=true&&uris=/events/" + eventDtoResponse.getId();
         List<ViewStats> list = this.getStat(uri);
         this.parseViewsForEvent(list, eventDtoResponse);
         if (eventDtoResponse.getViews() == null) {
@@ -201,9 +206,6 @@ public class AdminEventServiceImpl implements AdminEventService {
 
     private void parseViewsForEvent(List<ViewStats> viewStatsList, EventDtoResponse eventDtoResponse) {
         for (ViewStats stats : viewStatsList) {
-            String uri = stats.getUri();
-            String[] splitString = uri.split("/");
-            int index = Integer.parseInt(splitString[2]);
             eventDtoResponse.setViews(stats.getHits());
         }
     }

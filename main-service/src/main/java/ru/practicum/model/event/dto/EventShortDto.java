@@ -17,5 +17,5 @@ public class EventShortDto {
     UserDto initiator;
     Boolean paid;
     String title;
-    Integer views;
+    Long views;
 }

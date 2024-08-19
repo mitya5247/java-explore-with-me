@@ -14,6 +14,7 @@ public interface AdminEventService {
     public List<EventDtoResponse> get(List<Integer> usersId, List<String> states, List<Integer> categoriesId, String start,
                                       String end, Integer from, Integer size);
 
-    public EventDtoResponse patch(Integer eventId, UpdateEventAdminRequest updateEventAdminRequest) throws EntityNotFoundException, EventPatchException, EventAlreadyPublishedException, EventPublicationException;
+    public EventDtoResponse patch(Integer eventId, UpdateEventAdminRequest updateEventAdminRequest) throws EntityNotFoundException,
+            EventPatchException, EventAlreadyPublishedException, EventPublicationException;
 
 }

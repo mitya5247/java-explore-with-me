@@ -14,5 +14,5 @@ public interface PublicEventService {
                                       String rangeEnd, Boolean onlyAvailable, String sort, Integer from,
                                       Integer size, HttpServletRequest request) throws JsonProcessingException, ValidationException;
 
-    public EventDtoResponse getEvent(Integer eventId, HttpServletRequest request) throws EntityNotFoundException, JsonProcessingException;
+    public EventDtoResponse getEvent(Integer eventId, HttpServletRequest request) throws EntityNotFoundException;
 }
