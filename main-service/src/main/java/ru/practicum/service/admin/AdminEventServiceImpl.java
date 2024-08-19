@@ -70,7 +70,7 @@ public class AdminEventServiceImpl implements AdminEventService {
 
         List<Event> events = new ArrayList<>();
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        Pageable pageable = PageRequest.of(from/size, size);
+        Pageable pageable = PageRequest.of(from / size, size);
         List<State> stateList = new ArrayList<>();
         if (usersId == null && states == null && categoriesId == null && start == null && end == null) {
             events = eventRepository.findByEmptyParametres(pageable);
@@ -166,7 +166,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         }
         if (eventDto2.getStateAction() != null && eventDto2.getStateAction().equals(AdminStateAction.REJECT_EVENT.toString())) {
             event1.setState(State.CANCELED);
-        } else  {
+        } else {
             event1.setState(State.PUBLISHED);
             event1.setPublishedOn(LocalDateTime.now());
         }

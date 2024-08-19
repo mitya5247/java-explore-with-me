@@ -89,7 +89,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     @Override
     public List<EventShortDto> getEvents(Integer userId, Integer from, Integer size) throws EntityNotFoundException {
-        Pageable pageable = PageRequest.of(from/size, size);
+        Pageable pageable = PageRequest.of(from / size, size);
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with id " + userId +
                 " was not found"));
         List<EventShortDto> list = eventRepository.findAllByInitiator(user, pageable).stream()
@@ -157,7 +157,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         try {
 
             Event event = eventRepository.findById(eventId).orElseThrow(() -> new EntityNotFoundException("Event with id " + eventId +
-                " was not found"));
+                    " was not found"));
             List<Integer> listIdsRequests = eventRequestStatusUpdateRequest.getRequestIds();
 
             if (event.getParticipantLimit() == 0) {
@@ -191,7 +191,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         if (eventDto2.getCategory() != null) {
             Category category = categoryRepository.findById(eventDto2.getCategory()).orElseThrow(() ->
                     new EntityNotFoundException("Category with id " + eventDto2.getCategory() +
-                    " was not found"));
+                            " was not found"));
             event1.setCategory(category);
         }
         if (eventDto2.getTitle() != null) {
@@ -205,7 +205,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         }
         if (eventDto2.getStateAction() != null && eventDto2.getStateAction().equals(PrivateStateAction.CANCEL_REVIEW.toString())) {
             event1.setState(State.CANCELED);
-        } else  {
+        } else {
             event1.setState(State.PENDING);
             event1.setPublishedOn(LocalDateTime.now());
         }
@@ -225,19 +225,19 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         Status statusEnum = Status.valueOf(status);
         switch (statusEnum) {
             case CONFIRMED:
-            for (Integer id : requestIds) {
-                int count = requestRepository.countRequests(event.getId());
-                ParticipationRequest request = requestRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Request with id " + id +
-                        " was not found"));
-                if (count < event.getParticipantLimit()) {
-                    request.setStatus(Status.CONFIRMED);
-                    requestRepository.save(request);
-                    updateResult.getConfirmedRequests().add(requestMapper.requestToDto(request));
-                } else {
-                    throw new ParticipationsLimitOvercomeException("limit is overcome");
+                for (Integer id : requestIds) {
+                    int count = requestRepository.countRequests(event.getId());
+                    ParticipationRequest request = requestRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Request with id " + id +
+                            " was not found"));
+                    if (count < event.getParticipantLimit()) {
+                        request.setStatus(Status.CONFIRMED);
+                        requestRepository.save(request);
+                        updateResult.getConfirmedRequests().add(requestMapper.requestToDto(request));
+                    } else {
+                        throw new ParticipationsLimitOvercomeException("limit is overcome");
+                    }
                 }
-            }
-            break;
+                break;
             case REJECTED:
                 for (Integer id : requestIds) {
                     ParticipationRequest request = requestRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Request with id " + id +
@@ -309,7 +309,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     private void parseViewsForEvent(List<ViewStats> viewStatsList, EventDtoResponse eventDtoResponse) {
         for (ViewStats stats : viewStatsList) {
-              eventDtoResponse.setViews(stats.getHits());
+            eventDtoResponse.setViews(stats.getHits());
         }
     }
 

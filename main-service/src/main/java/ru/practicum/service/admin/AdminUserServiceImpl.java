@@ -29,7 +29,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     public List<User> get(List<Integer> usersId, Integer from, Integer size) {
-        Pageable pageable = PageRequest.of(from/size, size);
+        Pageable pageable = PageRequest.of(from / size, size);
         if (usersId != null) {
             return repository.findAllById(usersId);
         }
