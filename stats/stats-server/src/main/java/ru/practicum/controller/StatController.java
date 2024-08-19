@@ -2,6 +2,7 @@ package ru.practicum.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +10,6 @@ import ru.practicum.EndpointHitDto;
 import ru.practicum.model.ViewStats;
 import ru.practicum.service.StatServiceImpl;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -26,7 +26,6 @@ public class StatController {
         String response = service.createHit(request, endpointHit);
         String json = mapper.writeValueAsString(response);
         return json;
-//        return service.createHit(request, endpointHit);
     }
 
     @GetMapping("/stats")
@@ -35,9 +34,6 @@ public class StatController {
                                    @RequestParam(required = false) List<String> uris,
                                    @RequestParam(defaultValue = "false", required = false) Boolean unique) throws JsonProcessingException {
         String json = mapper.writeValueAsString(service.getStat(start, end, uris, unique));
-//        List<ViewStats> list = service.getStat(start, end, uris, unique);
-//        String json = mapper.writeValueAsString(list);
-//        return json;
         return service.getStat(start, end, uris, unique);
     }
 }

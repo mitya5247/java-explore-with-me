@@ -1,8 +1,8 @@
 package ru.practicum.model.category;
 
+import jakarta.persistence.*;
 import lombok.Data;
 
-import javax.persistence.*;
 
 @Data
 @Entity

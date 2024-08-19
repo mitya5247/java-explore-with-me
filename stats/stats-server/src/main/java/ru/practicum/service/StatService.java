@@ -3,7 +3,7 @@ package ru.practicum.service;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.model.ViewStats;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface StatService {

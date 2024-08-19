@@ -10,7 +10,7 @@ import ru.practicum.model.event.dto.EventDtoResponse;
 import ru.practicum.model.event.dto.UpdateEventAdminRequest;
 import ru.practicum.service.admin.AdminEventService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController

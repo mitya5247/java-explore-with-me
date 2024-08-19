@@ -1,5 +1,6 @@
 package ru.practicum.controller.admin;
 
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -10,8 +11,6 @@ import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.category.dto.CategoryDto;
 import ru.practicum.service.admin.AdminCategoryService;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/admin/categories")

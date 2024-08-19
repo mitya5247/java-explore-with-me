@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)

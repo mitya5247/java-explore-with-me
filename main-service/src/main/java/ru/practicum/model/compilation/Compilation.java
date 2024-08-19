@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.model.event.Event;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 @Data

@@ -1,6 +1,7 @@
 package ru.practicum.controller.publ;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exceptions.EntityNotFoundException;
@@ -8,7 +9,6 @@ import ru.practicum.exceptions.ValidationException;
 import ru.practicum.model.event.dto.EventDtoResponse;
 import ru.practicum.service.publ.PublicEventService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController

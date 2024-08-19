@@ -7,7 +7,7 @@ import ru.practicum.model.event.Event;
 import ru.practicum.model.event.Status;
 import ru.practicum.model.user.User;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Data

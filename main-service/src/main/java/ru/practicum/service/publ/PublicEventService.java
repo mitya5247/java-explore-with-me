@@ -5,7 +5,7 @@ import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.exceptions.ValidationException;
 import ru.practicum.model.event.dto.EventDtoResponse;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface PublicEventService {

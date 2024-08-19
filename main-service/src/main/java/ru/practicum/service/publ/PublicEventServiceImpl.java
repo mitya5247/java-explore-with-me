@@ -26,7 +26,7 @@ import ru.practicum.repository.EventRepository;
 import ru.practicum.repository.RequestRepository;
 import ru.practicum.repository.UserRepository;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

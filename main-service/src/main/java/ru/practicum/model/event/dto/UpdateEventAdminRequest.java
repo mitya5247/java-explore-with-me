@@ -6,8 +6,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.model.location.dto.LocationDto;
 
-import javax.validation.constraints.PositiveOrZero;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)

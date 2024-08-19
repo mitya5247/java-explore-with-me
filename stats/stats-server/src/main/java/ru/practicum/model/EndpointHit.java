@@ -1,10 +1,10 @@
 package ru.practicum.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDateTime;
 
 @Entity

@@ -11,7 +11,7 @@ import ru.practicum.model.event.dto.*;
 import ru.practicum.model.request.dto.ParticipationRequestDto;
 import ru.practicum.service.priv.PrivateEventService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController

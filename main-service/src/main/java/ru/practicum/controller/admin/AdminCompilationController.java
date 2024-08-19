@@ -10,7 +10,7 @@ import ru.practicum.model.compilation.dto.NewCompilationDto;
 import ru.practicum.model.compilation.dto.UpdateCompilationDto;
 import ru.practicum.service.admin.AdminCompilationService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/admin/compilations")

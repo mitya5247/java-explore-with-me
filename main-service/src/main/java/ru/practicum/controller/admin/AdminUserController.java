@@ -11,7 +11,7 @@ import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.model.user.User;
 import ru.practicum.service.admin.AdminUserService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController

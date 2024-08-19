@@ -8,7 +8,7 @@ import ru.practicum.model.EndpointHit;
 import ru.practicum.model.ViewStats;
 import ru.practicum.repository.StatRepository;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
