@@ -14,24 +14,21 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Integer> {
 
-//    @Query(value = "select new ru.practicum.model.event.dto.EventShortDto(e.annotation, e.category, " +
-//            "e.eventDate, e.id, e.initiator, e.paid, e.title) from Event as e where e.initiator.id = :initiatorId")
-//    List<EventShortDto> findAllByInitiator(User user, Pageable pageable); // добавидть сортировку и добавить проекцию на этот класс для преобр в объект
 
     @Query(value = "select new ru.practicum.model.event.dto.EventShortDtoDb(e.annotation, e.category, 0, e.eventDate, e.id, " +
             "e.initiator, e.paid, e.title, 0) from Event as e where e.initiator = :initiator")
     List<EventShortDtoDb> findAllByInitiator(@Param("initiator") User user1, Pageable pageable); // добавидть сортировку и добавить проекцию на этот класс для преобр в объект
 
-    @Query(value = "select e from Event e where (e.initiator.id IS NOT NULL OR e.initiator.id IN :usersId) AND " +
-            "(e.state IS NOT NULL OR e.state IN :states) AND (e.category.id IS NOT NULL OR e.category.id IN :categoriesId) AND " +
-            "e.eventDate BETWEEN :startTime AND :endTime order by e.eventDate desc")
+    @Query(value = "select e from Event e where (e.initiator.id IN :usersId) AND " +
+            "(e.state IN :states) AND (e.category.id IN :categoriesId) AND " +
+            "e.eventDate BETWEEN :start AND :end order by e.eventDate")
     List<Event> findEventByUsersAndStateAndCategoryBetween(@Param("usersId") List<Integer> usersId, @Param("states") List<State> states,
                         @Param("categoriesId") List<Integer> categoriesId,
-                        @Param("startTime") LocalDateTime startTime,
-                        @Param("endTime") LocalDateTime endTime, Pageable pageable);  // admin - запрос сервиса со временем
+                        @Param("start") LocalDateTime startTime,
+                        @Param("end") LocalDateTime endTime, Pageable pageable);  // admin - запрос сервиса со временем
 
-    @Query(value = "select e from Event e where (e.initiator.id IN :usersId OR e.initiator.id IS NOT NULL) AND " +
-            "(e.state IN :states OR e.state IS NOT NULL) AND (e.category.id IN :categoriesId OR e.category.id IS NOT NULL) " +
+    @Query(value = "select e from Event e where (e.initiator.id IN :usersId) AND " +
+            "(e.state IN :states) AND (e.category.id IN :categoriesId) " +
             "order by e.eventDate desc")
     List<Event> findEventByUsersAndStateAndCategory(@Param("usersId") List<Integer> usersId,
                                                     @Param("states") List<State> states,
@@ -50,5 +47,8 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                                          @Param("paid") Boolean paid, Pageable pageable); // public - без времени
 
     List<Event> findAllByIdIn(List<Integer> eventId); // поиск для подборок
+
+    @Query(value = "select e from Event e")
+    List<Event> findByEmptyParametres(Pageable pageable);
 
 }

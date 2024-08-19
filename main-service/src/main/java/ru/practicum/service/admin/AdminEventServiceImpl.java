@@ -56,10 +56,31 @@ public class AdminEventServiceImpl implements AdminEventService {
     public List<EventDtoResponse> get(List<Integer> usersId, List<String> states, List<Integer> categoriesId, String start,
                                       String end, Integer from, Integer size) {
 
+        List<Event> events = new ArrayList<>();
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         Pageable pageable = PageRequest.of(from/size, size);
         List<State> stateList = new ArrayList<>();
-        List<Event> events = new ArrayList<>();
+        if (usersId == null && states == null && categoriesId == null && start == null && end == null) {
+            events = eventRepository.findByEmptyParametres(pageable);
+            return events.stream()
+                    .map(this::mapToResponse)
+                    .map(this::countRequests)
+                    .map(this::getStat)
+                    .collect(Collectors.toList());
+        }
+        if (categoriesId == null) {
+            categoriesId = new ArrayList<>();
+        }
+        if (usersId == null) {
+            usersId = new ArrayList<>();
+        }
+        if (states != null) {
+            for (String state : states) {
+                stateList.add(State.valueOf(state));
+            }
+        } else {
+            stateList = new ArrayList<>();
+        }
         if (start == null && end == null) {
             events = eventRepository.findEventByUsersAndStateAndCategory(usersId, stateList, categoriesId, pageable);
         }

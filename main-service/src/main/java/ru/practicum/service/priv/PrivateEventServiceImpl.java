@@ -191,7 +191,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
     private EventShortDtoDb countRequests(EventShortDtoDb eventShortDtoDb) {
-//        ConfirmedRequest confirmedRequest = requestRepository.countConfRequests(eventShortDtoDb.getId());
         eventShortDtoDb.setConfirmedRequests(requestRepository.countRequests(eventShortDtoDb.getId()));
         return eventShortDtoDb;
     }
@@ -212,9 +211,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                     requestRepository.save(request);
                     updateResult.getConfirmedRequests().add(requestMapper.requestToDto(request));
                 } else {
-//                    request.setStatus(Status.REJECTED);
-//                    requestRepository.save(request);
-//                    updateResult.getRejectedRequests().add(requestMapper.requestToDto(request));
                     throw new ParticipationsLimitOvercomeException("limit is overcome");
                 }
             }

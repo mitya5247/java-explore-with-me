@@ -11,7 +11,8 @@ import java.util.List;
 public interface PublicEventService {
 
     public List<EventDtoResponse> get(String textAnnotation, List<Integer> categoriesId, Boolean paid, String rangeStart,
-                                      String rangeEnd, Boolean onlyAvailable, String sort, Integer from, Integer size, HttpServletRequest request) throws JsonProcessingException, ValidationException;
+                                      String rangeEnd, Boolean onlyAvailable, String sort, Integer from,
+                                      Integer size, HttpServletRequest request) throws JsonProcessingException, ValidationException;
 
     public EventDtoResponse getEvent(Integer eventId, HttpServletRequest request) throws EntityNotFoundException, JsonProcessingException;
 }

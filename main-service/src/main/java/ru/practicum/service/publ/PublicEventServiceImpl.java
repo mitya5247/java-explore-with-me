@@ -82,9 +82,6 @@ public class PublicEventServiceImpl implements PublicEventService {
         if (categoriesId == null) {
             categoriesId = new ArrayList<>();
         }
-//        if (paid == null) {
-//            paid = false;
-//        }
         if (onlyAvailable == null) {
             onlyAvailable = true;
         }
@@ -109,9 +106,6 @@ public class PublicEventServiceImpl implements PublicEventService {
                 categoriesId, paid, startMoment, endMoment, pageable);
 
         this.sendStatisticWithManyEvents(request, events);
-//        String uri = baseUri + "/stats?end=2041-01-01 00:00:00&uris=/events";
-//        ResponseEntity<Object> response = client.getRequest(baseUri + "/stats?end=2041-01-01 00:00:00&uris=/events");
-//        List<ViewStats> list = this.getStat(uri);
 
         return events.stream()
                 .map(this::mapToResponse)
@@ -183,17 +177,6 @@ public class PublicEventServiceImpl implements PublicEventService {
         return eventDtoResponse;
     }
 
-//    private void parseViewsForEvents(List<ViewStats> viewStatsList) {
-//        for (ViewStats stats : viewStatsList) {
-//            String uri = stats.getUri();
-//            String[] splitString = uri.split("/");
-//            int index = Integer.parseInt(splitString[2]);
-//            Event event = eventHashMap.get(index);
-//            EventDtoResponse eventDtoResponse = eventMapper.eventToEventDtoResponse(event);
-//            eventDtoResponse.setViews(stats.getHits());
-//        }
-//    }
-
     private void parseViewsForEvent(List<ViewStats> viewStatsList, EventDtoResponse eventDtoResponse) {
         for (ViewStats stats : viewStatsList) {
             String uri = stats.getUri();
@@ -202,12 +185,5 @@ public class PublicEventServiceImpl implements PublicEventService {
             eventDtoResponse.setViews(stats.getHits());
         }
     }
-
-//    private HashMap<Integer, Event> convertToEventMap(List<Event> events) {
-//        for (Event event : events) {
-//            eventHashMap.put(event.getId(), event);
-//        }
-//        return eventHashMap;
-//    }
 
 }
