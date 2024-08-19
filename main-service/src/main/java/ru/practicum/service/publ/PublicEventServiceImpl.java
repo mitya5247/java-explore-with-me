@@ -80,12 +80,6 @@ public class PublicEventServiceImpl implements PublicEventService {
         if (categoriesId == null) {
             categoriesId = new ArrayList<>();
         }
-        if (onlyAvailable == null) {
-            onlyAvailable = true;
-        }
-        if (sort == null) {
-            sort = Sort.EVENT_DATE.toString();
-        }
 
         if (rangeStart == null && rangeEnd == null) {
             LocalDateTime moment = LocalDateTime.now();
