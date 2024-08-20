@@ -30,10 +30,9 @@ public class StatController {
 
     @GetMapping("/stats")
     public List<ViewStats> getStat(@RequestParam(defaultValue = "2021-01-01 00:00:00") String start,
-                                   @RequestParam(defaultValue = "2021-01-01 00:00:00") String end,
+                                   @RequestParam(defaultValue = "2091-01-01 00:00:00") String end,
                                    @RequestParam(required = false) List<String> uris,
                                    @RequestParam(defaultValue = "false", required = false) Boolean unique) throws JsonProcessingException {
-        String json = mapper.writeValueAsString(service.getStat(start, end, uris, unique));
         return service.getStat(start, end, uris, unique);
     }
 }
