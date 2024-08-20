@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.EndpointHitDto;
+import ru.practicum.ViewStats;
 import ru.practicum.exception.InvalidDateTimeException;
-import ru.practicum.model.ViewStats;
 import ru.practicum.service.StatServiceImpl;
 
 import java.util.List;
@@ -27,8 +27,7 @@ public class StatController {
     @PostMapping("/hit")
     public String createHit(HttpServletRequest request, @RequestBody EndpointHitDto endpointHit) throws JsonProcessingException, InvalidDateTimeException {
         String response = service.createHit(request, endpointHit);
-        String json = mapper.writeValueAsString(response);
-        return json;
+        return mapper.writeValueAsString(response);
     }
 
     @GetMapping("/stats")

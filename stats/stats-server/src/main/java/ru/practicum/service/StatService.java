@@ -1,8 +1,8 @@
 package ru.practicum.service;
 
 import ru.practicum.EndpointHitDto;
+import ru.practicum.ViewStats;
 import ru.practicum.exception.InvalidDateTimeException;
-import ru.practicum.model.ViewStats;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;

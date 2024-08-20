@@ -8,9 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.EndpointHitDto;
+import ru.practicum.ViewStats;
 import ru.practicum.exception.InvalidDateTimeException;
 import ru.practicum.model.EndpointHit;
-import ru.practicum.model.ViewStats;
+import ru.practicum.repository.StatRepository;
 import ru.practicum.service.StatService;
 import ru.practicum.service.StatServiceImpl;
 
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest(
-        classes = {StatServiceImpl.class, EndpointHit.class},
+        classes = {StatServiceImpl.class, EndpointHit.class, ViewStats.class},
         properties = "db.name=test"
 )
 @EnableJpaRepositories("ru.practicum")

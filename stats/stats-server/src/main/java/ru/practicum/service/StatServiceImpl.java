@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.Mapper;
+import ru.practicum.ViewStats;
 import ru.practicum.exception.InvalidDateTimeException;
 import ru.practicum.model.EndpointHit;
-import ru.practicum.model.ViewStats;
 import ru.practicum.repository.StatRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
