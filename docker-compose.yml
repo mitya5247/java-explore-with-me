@@ -39,6 +39,7 @@ services:
      - POSTGRES_PASSWORD=root
      - DB_HOST=ewm-db
      - DB_PORT=5432
+     - HOST=stats-server
    ports:
      - "8080:8080"
 
