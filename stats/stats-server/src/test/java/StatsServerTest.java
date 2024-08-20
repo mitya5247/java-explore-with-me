@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.EndpointHitDto;
+import ru.practicum.exception.InvalidDateTimeException;
 import ru.practicum.model.EndpointHit;
 import ru.practicum.model.ViewStats;
 import ru.practicum.service.StatService;
@@ -54,7 +55,7 @@ public class StatsServerTest {
     }
 
     @Test
-    public void saveEndpoint() {
+    public void saveEndpoint() throws InvalidDateTimeException {
         endpointHitDto.setApp("myApp1");
         service.createHit(request, endpointHitDto);
 
@@ -68,7 +69,7 @@ public class StatsServerTest {
     }
 
     @Test
-    public void getUnuniqueStatistic() {
+    public void getUnuniqueStatistic() throws InvalidDateTimeException {
         String start = "2020-12-31 13:27:45";
         String end = "2030-03-21 00:00:00";
         List<String> uris = new ArrayList<>();
@@ -88,7 +89,7 @@ public class StatsServerTest {
     }
 
     @Test
-    public void getUniqueStatistic() {
+    public void getUniqueStatistic() throws InvalidDateTimeException {
         String start = "2020-12-31 13:27:45";
         String end = "2030-03-21 00:00:00";
         List<String> uris = new ArrayList<>();
@@ -108,7 +109,7 @@ public class StatsServerTest {
     }
 
     @Test
-    public void getStatisticOutOfBounds() {
+    public void getStatisticOutOfBounds() throws InvalidDateTimeException {
         String start = "2027-12-31 13:27:45";
         String end = "2030-03-21 00:00:00";
         List<String> uris = new ArrayList<>();
@@ -128,7 +129,7 @@ public class StatsServerTest {
     }
 
     @Test
-    public void getStatisticWithInvalidTime() {
+    public void getStatisticWithInvalidTime() throws InvalidDateTimeException {
         String start = "2030-12-31 13:27:45";
         String end = "2028-03-21 00:00:00";
         List<String> uris = new ArrayList<>();
@@ -143,6 +144,6 @@ public class StatsServerTest {
         service.createHit(request, endpointHitDto);
         service.createHit(request, endpointHitDto2);
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> service.getStat(start, end, uris, true));
+        Assertions.assertThrows(InvalidDateTimeException.class, () -> service.getStat(start, end, uris, true));
     }
 }
