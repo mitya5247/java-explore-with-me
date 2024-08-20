@@ -3,6 +3,7 @@ package ru.practicum.controller.publ;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.Constants;
 import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.model.compilation.dto.CompilationResponseDto;
 import ru.practicum.service.publ.PublicCompilationService;
@@ -24,8 +25,8 @@ public class PublicCompilationController {
         return service.get(pinned, from, size);
     }
 
-    @GetMapping("/{compId}")
-    public CompilationResponseDto getCompilation(@PathVariable Integer compId) throws EntityNotFoundException {
+    @GetMapping(Constants.COMPILATION_PATH_ID)
+    public CompilationResponseDto getCompilation(@PathVariable(name = "comp-id") Integer compId) throws EntityNotFoundException {
         return service.getCompilation(compId);
     }
 }

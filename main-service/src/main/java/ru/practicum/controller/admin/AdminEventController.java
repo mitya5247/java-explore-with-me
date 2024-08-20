@@ -2,6 +2,7 @@ package ru.practicum.controller.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.Constants;
 import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.exceptions.EventAlreadyPublishedException;
 import ru.practicum.exceptions.EventPatchException;
@@ -30,8 +31,8 @@ public class AdminEventController {
         return service.get(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
-    @PatchMapping("/{eventId}")
-    public EventDtoResponse patch(@PathVariable Integer eventId, @Valid @RequestBody UpdateEventAdminRequest updateEventAdminRequest)
+    @PatchMapping(Constants.EVENT_PATH_ID)
+    public EventDtoResponse patch(@PathVariable(name = "event-id") Integer eventId, @Valid @RequestBody UpdateEventAdminRequest updateEventAdminRequest)
             throws EventPatchException, EntityNotFoundException, EventAlreadyPublishedException, EventPublicationException {
         return service.patch(eventId, updateEventAdminRequest);
     }

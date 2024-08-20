@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.Constants;
 import ru.practicum.exceptions.EmailAlreadyExistsException;
 import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.model.user.User;
@@ -30,11 +31,12 @@ public class AdminUserController {
     }
 
     @GetMapping
-    public List<User> get(@RequestParam(required = false, name = "ids") List<Integer> usersId, @RequestParam(defaultValue = "0") Integer from, @RequestParam(defaultValue = "10") Integer size) {
+    public List<User> get(@RequestParam(required = false, name = "ids") List<Integer> usersId,
+                          @RequestParam(defaultValue = "0") Integer from, @RequestParam(defaultValue = "10") Integer size) {
         return service.get(usersId, from, size);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(Constants.ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Integer id) throws EntityNotFoundException {
         service.delete(id);

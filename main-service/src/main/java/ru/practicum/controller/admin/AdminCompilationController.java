@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.Constants;
 import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.model.compilation.dto.CompilationResponseDto;
 import ru.practicum.model.compilation.dto.NewCompilationDto;
@@ -26,14 +27,15 @@ public class AdminCompilationController {
         return service.create(compilationDto);
     }
 
-    @PatchMapping("/{compId}")
-    public CompilationResponseDto patch(@PathVariable Integer compId, @Valid @RequestBody UpdateCompilationDto updateCompilationDto) throws EntityNotFoundException {
+    @PatchMapping(Constants.COMPILATION_PATH_ID)
+    public CompilationResponseDto patch(@PathVariable(name = "comp-id") Integer compId,
+                                        @Valid @RequestBody UpdateCompilationDto updateCompilationDto) throws EntityNotFoundException {
         return service.patch(compId, updateCompilationDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{compId}")
-    public void delete(@PathVariable Integer compId) throws EntityNotFoundException {
+    @DeleteMapping(Constants.COMPILATION_PATH_ID)
+    public void delete(@PathVariable(name = "comp-id") Integer compId) throws EntityNotFoundException {
         service.delete(compId);
     }
 }

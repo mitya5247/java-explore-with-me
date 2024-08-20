@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.Constants;
 import ru.practicum.exceptions.*;
 import ru.practicum.model.event.dto.*;
 import ru.practicum.model.request.dto.ParticipationRequestDto;
@@ -24,35 +25,42 @@ public class PrivateEventController {
     PrivateEventService service;
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/{userId}/events")
-    public EventDtoResponse create(@PathVariable Integer userId, @Valid @RequestBody EventDto eventDto) throws EntityNotFoundException, EventPatchException {
+    @PostMapping(Constants.USER_PATH_ID + Constants.EVENTS_PATH)
+    public EventDtoResponse create(@PathVariable(name = "user-id") Integer userId,
+                                   @Valid @RequestBody EventDto eventDto) throws EntityNotFoundException, EventPatchException {
         return service.create(userId, eventDto);
     }
 
-    @PatchMapping("/{userId}/events/{eventId}")
-    public EventDtoResponse patch(@PathVariable Integer userId, @PathVariable Integer eventId,
-                                  @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest) throws EventPatchException, EntityNotFoundException, EventAlreadyPublishedException {
+    @PatchMapping(Constants.USER_PATH_ID + Constants.EVENTS_PATH_ID)
+    public EventDtoResponse patch(@PathVariable(name = "user-id") Integer userId, @PathVariable(name = "event-id") Integer eventId,
+                                  @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest) throws EventPatchException,
+                                  EntityNotFoundException, EventAlreadyPublishedException {
         return service.patchEvent(userId, eventId, updateEventUserRequest);
     }
 
-    @GetMapping("/{userId}/events/{eventId}")
-    public EventDtoResponse getFullEvent(@PathVariable Integer userId, @PathVariable Integer eventId) throws EntityNotFoundException {
+    @GetMapping(Constants.USER_PATH_ID + Constants.EVENTS_PATH_ID)
+    public EventDtoResponse getFullEvent(@PathVariable(name = "user-id") Integer userId,
+                                         @PathVariable(name = "event-id") Integer eventId) throws EntityNotFoundException {
         return service.getFullEvent(userId, eventId);
     }
 
-    @GetMapping("/{userId}/events")
-    public List<EventShortDto> getEvents(@PathVariable Integer userId, @RequestParam(defaultValue = "0") Integer from,
-                                                @RequestParam(defaultValue = "10") Integer size) throws EntityNotFoundException {
+    @GetMapping(Constants.USER_PATH_ID + Constants.EVENTS_PATH)
+    public List<EventShortDto> getEvents(@PathVariable(name = "user-id") Integer userId,
+                                         @RequestParam(defaultValue = "0") Integer from,
+                                         @RequestParam(defaultValue = "10") Integer size) throws EntityNotFoundException {
         return service.getEvents(userId, from, size);
     }
 
-    @GetMapping("/{userId}/events/{eventId}/requests")
-    public List<ParticipationRequestDto> getRequests(@PathVariable Integer userId, @PathVariable Integer eventId) throws RequestErrorException, EntityNotFoundException {
+    @GetMapping(Constants.USER_EVENT_REQUESTS_PATH)
+    public List<ParticipationRequestDto> getRequests(@PathVariable(name = "user-id") Integer userId,
+                                                     @PathVariable(name = "event-id") Integer eventId) throws
+                                                     RequestErrorException, EntityNotFoundException {
         return service.getRequests(userId, eventId);
     }
 
-    @PatchMapping("/{userId}/events/{eventId}/requests")
-    public EventRequestStatusUpdateResult patchStatus(@PathVariable Integer userId, @PathVariable Integer eventId,
+    @PatchMapping(Constants.USER_EVENT_REQUESTS_PATH)
+    public EventRequestStatusUpdateResult patchStatus(@PathVariable(name = "user-id") Integer userId,
+                                                      @PathVariable(name = "event-id") Integer eventId,
                                                       @RequestBody(required = false) EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest)
             throws RequestErrorException, EntityNotFoundException, ParticipationsLimitOvercomeException {
         return service.patchStatus(userId, eventId, eventRequestStatusUpdateRequest);

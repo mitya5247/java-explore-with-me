@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.Constants;
 import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.exceptions.ValidationException;
 import ru.practicum.model.event.dto.EventDtoResponse;
@@ -32,8 +33,8 @@ public class PublicEventController {
         return service.get(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, request);
     }
 
-    @GetMapping("/{eventId}")
-    public EventDtoResponse getEvent(@PathVariable Integer eventId, HttpServletRequest request) throws EntityNotFoundException {
+    @GetMapping(Constants.EVENT_PATH_ID)
+    public EventDtoResponse getEvent(@PathVariable(name = "event-id") Integer eventId, HttpServletRequest request) throws EntityNotFoundException {
         return service.getEvent(eventId, request);
     }
 }

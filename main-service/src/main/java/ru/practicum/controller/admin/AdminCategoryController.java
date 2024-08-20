@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.Constants;
 import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.category.dto.CategoryDto;
@@ -27,13 +28,13 @@ public class AdminCategoryController {
         return service.create(categoryDto);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping(Constants.ID)
     public Category patch(@PathVariable Integer id, @Valid @RequestBody CategoryDto categoryDto) throws EntityNotFoundException {
         return service.patch(id, categoryDto);
     }
 
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(Constants.ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Integer id) throws EntityNotFoundException {
         service.delete(id);
