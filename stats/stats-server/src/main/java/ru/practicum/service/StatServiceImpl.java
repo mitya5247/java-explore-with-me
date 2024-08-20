@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.Mapper;
+import ru.practicum.exception.InvalidDateTimeException;
 import ru.practicum.model.EndpointHit;
 import ru.practicum.model.ViewStats;
 import ru.practicum.repository.StatRepository;
@@ -20,7 +21,7 @@ public class StatServiceImpl implements StatService {
     private final StatRepository repository;
 
     @Override
-    public String createHit(HttpServletRequest request, EndpointHitDto endpointHitDto) {
+    public String createHit(HttpServletRequest request, EndpointHitDto endpointHitDto) throws InvalidDateTimeException {
         endpointHitDto.setIp(request.getRemoteAddr());
         EndpointHit endpointHit = Mapper.convertToEndpointHit(endpointHitDto);
         this.validateTimestamp(endpointHit.getTimestamp());
@@ -29,7 +30,7 @@ public class StatServiceImpl implements StatService {
     }
 
     @Override
-    public List<ViewStats> getStat(String start, String end, List<String> uris, Boolean unique) {
+    public List<ViewStats> getStat(String start, String end, List<String> uris, Boolean unique) throws InvalidDateTimeException {
         LocalDateTime startMoment = LocalDateTime.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         LocalDateTime endMoment = LocalDateTime.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         this.validateTimeBounds(startMoment, endMoment);
@@ -46,16 +47,16 @@ public class StatServiceImpl implements StatService {
         return viewStatsList;
     }
 
-    private void validateTimestamp(LocalDateTime time) {
+    private void validateTimestamp(LocalDateTime time) throws InvalidDateTimeException {
         if (time.isAfter(LocalDateTime.now())) {
-            throw new IllegalArgumentException("timestamp must not be in future");
+            throw new InvalidDateTimeException("timestamp must not be in future");
         }
         return;
     }
 
-    private void validateTimeBounds(LocalDateTime start, LocalDateTime end) {
+    private void validateTimeBounds(LocalDateTime start, LocalDateTime end) throws InvalidDateTimeException {
         if (start.isAfter(end)) {
-            throw new IllegalArgumentException("end must not be earlier than start");
+            throw new InvalidDateTimeException("end must not be earlier than start");
         }
         return;
     }

@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.EndpointHitDto;
+import ru.practicum.exception.InvalidDateTimeException;
 import ru.practicum.model.ViewStats;
 import ru.practicum.service.StatServiceImpl;
 
@@ -21,8 +23,9 @@ public class StatController {
     private final StatServiceImpl service;
     ObjectMapper mapper = new ObjectMapper();
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/hit")
-    public String createHit(HttpServletRequest request, @RequestBody EndpointHitDto endpointHit) throws JsonProcessingException {
+    public String createHit(HttpServletRequest request, @RequestBody EndpointHitDto endpointHit) throws JsonProcessingException, InvalidDateTimeException {
         String response = service.createHit(request, endpointHit);
         String json = mapper.writeValueAsString(response);
         return json;
@@ -32,7 +35,7 @@ public class StatController {
     public List<ViewStats> getStat(@RequestParam(defaultValue = "2021-01-01 00:00:00") String start,
                                    @RequestParam(defaultValue = "2091-01-01 00:00:00") String end,
                                    @RequestParam(required = false) List<String> uris,
-                                   @RequestParam(defaultValue = "false", required = false) Boolean unique) throws JsonProcessingException {
+                                   @RequestParam(defaultValue = "false", required = false) Boolean unique) throws InvalidDateTimeException {
         return service.getStat(start, end, uris, unique);
     }
 }

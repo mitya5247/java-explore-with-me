@@ -97,6 +97,7 @@ public class PublicEventServiceImpl implements PublicEventService {
                 categoriesId, paid, startMoment, endMoment, pageable);
 
         this.sendStatisticWithManyEvents(request, events);
+        this.sendStatistic(request, "/events");
 
         return events.stream()
                 .map(this::mapToResponse)
