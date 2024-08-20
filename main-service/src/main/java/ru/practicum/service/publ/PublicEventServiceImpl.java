@@ -84,6 +84,7 @@ public class PublicEventServiceImpl implements PublicEventService {
             LocalDateTime moment = LocalDateTime.now();
             events = eventRepository.findEventsByAllCriteriesWithoutTime("%" + textAnnotation.toLowerCase() +
                     "%", categoriesId, paid, pageable);
+            this.sendStatistic(request, "/events");
             return events.stream()
                     .map(this::mapToResponse)
                     .collect(Collectors.toList());
