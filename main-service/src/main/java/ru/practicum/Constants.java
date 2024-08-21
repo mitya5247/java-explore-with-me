@@ -19,11 +19,7 @@ public class Constants {
 
     public static final String EVENTS_PATH = "/events";
 
-    public static final String EVENT_PATH = "/event";
-
     public static final String USER_EVENT_REQUESTS_PATH = "/{user-id}/events/{event-id}/requests";
-
-    public static final String COMMENT_ID = "/{comment-id}";
 
 
 
