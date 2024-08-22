@@ -13,9 +13,4 @@ public class NewCommentDto {
     @NotBlank
     @Size(max = 500)
     String text;
-    @NotBlank
-    Integer author;
-    @NotBlank
-    Integer event;
-    String timestamp;
 }

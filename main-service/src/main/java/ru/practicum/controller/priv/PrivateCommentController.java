@@ -1,6 +1,8 @@
 package ru.practicum.controller.priv;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.Constants;
 import ru.practicum.exceptions.CommentException;
@@ -20,20 +22,21 @@ public class PrivateCommentController {
     @Autowired
     PrivateCommentService service;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(Constants.USER_PATH_ID + Constants.EVENT_PATH + Constants.EVENT_PATH_ID)
     public CommentDtoResponse create(@PathVariable(name = "user-id") Integer userId,
-                                     @PathVariable(name = "event-id") Integer eventId,
+                                     @PathVariable(name = "event-id") Integer eventId, @Valid @RequestBody
                                      NewCommentDto newCommentDto) throws
                                      EventIsNotPublishedException, EntityNotFoundException {
         return service.create(userId, eventId, newCommentDto);
     }
 
-    @PatchMapping(Constants.USER_PATH_ID + Constants.EVENT_PATH + Constants.EVENT_PATH_ID)
+    @PatchMapping(Constants.USER_PATH_ID + Constants.COMMENT_ID + Constants.EVENT_PATH_ID)
     public CommentDtoResponse patch(@PathVariable(name = "user-id") Integer userId,
-                                    @PathVariable(name = "event-id") Integer eventId,
+                                    @PathVariable(name = "comment-id") Integer commentId, @Valid @RequestBody
                                     UpdateCommentDto updateCommentDto) throws
                                     EntityNotFoundException, CommentException {
-        return service.patch(userId, eventId, updateCommentDto);
+        return service.patch(userId, commentId, updateCommentDto);
     }
 
     @GetMapping(Constants.COMMENT_ID)
@@ -48,5 +51,11 @@ public class PrivateCommentController {
                                         @RequestParam(required = false) String startTime,
                                         @RequestParam(required = false) String endTime) throws EntityNotFoundException {
         return service.get(userId, eventId, text, startTime, endTime);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping(Constants.COMMENT_ID)
+    public void delete(@PathVariable(name = "comment-id") Integer commentId) throws EntityNotFoundException {
+        service.delete(commentId);
     }
 }

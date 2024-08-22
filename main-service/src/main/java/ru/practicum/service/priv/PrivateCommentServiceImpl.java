@@ -53,10 +53,10 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
     }
 
     @Override
-    public CommentDtoResponse patch(Integer userId, Integer eventId, UpdateCommentDto updateCommentDto) throws EntityNotFoundException, CommentException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with id " + userId +
+    public CommentDtoResponse patch(Integer userId, Integer commentId, UpdateCommentDto updateCommentDto) throws EntityNotFoundException, CommentException {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new EntityNotFoundException("Comment with id " + commentId +
                 " was not found"));
-        if (!Objects.equals(updateCommentDto.getAuthor(), user.getId())) {
+        if (!Objects.equals(comment.getAuthor().getId(), userId)) {
             throw new CommentException("couldn't patch comment as you not author");
         }
         return null;

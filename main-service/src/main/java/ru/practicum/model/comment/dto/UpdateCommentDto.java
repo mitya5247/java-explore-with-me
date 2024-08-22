@@ -1,5 +1,7 @@
 package ru.practicum.model.comment.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -8,8 +10,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateCommentDto {
 
+    @Size(max = 500)
+    @NotBlank
     String text;
-    Integer author;
-    Integer event;
-    String timestamp;
 }
