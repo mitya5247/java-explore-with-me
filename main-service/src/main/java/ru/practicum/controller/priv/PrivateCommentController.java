@@ -31,7 +31,7 @@ public class PrivateCommentController {
         return service.create(userId, eventId, newCommentDto);
     }
 
-    @PatchMapping(Constants.USER_PATH_ID + Constants.COMMENT_ID + Constants.EVENT_PATH_ID)
+    @PatchMapping(Constants.USER_PATH_ID + "/comment" + Constants.COMMENT_ID)
     public CommentDtoResponse patch(@PathVariable(name = "user-id") Integer userId,
                                     @PathVariable(name = "comment-id") Integer commentId, @Valid @RequestBody
                                     UpdateCommentDto updateCommentDto) throws

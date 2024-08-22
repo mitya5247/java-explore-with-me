@@ -1,5 +1,6 @@
 package ru.practicum.service.priv;
 
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import ru.practicum.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -60,7 +62,9 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
         if (!Objects.equals(comment.getAuthor().getId(), userId)) {
             throw new CommentException("couldn't patch comment as you not author");
         }
-        return null;
+        this.patchComment(comment, updateCommentDto);
+        comment = commentRepository.save(comment);
+        return commentMapper.convertToResponse(comment);
     }
 
     @Override
@@ -71,8 +75,12 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
     }
 
     @Override
-    public List<CommentDtoResponse> get(List<Integer> userId, List<Integer> eventId, String text, String startTime, String endTime) {
-        return List.of();
+    public List<CommentDtoResponse> get(@Nullable List<Integer> userId, @Nullable List<Integer> eventId,
+                                        @Nullable String text, @Nullable String startTime, String endTime) {
+        List<Comment> comments = commentRepository.findComments(userId, eventId, text, startTime, endTime);
+        return comments.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -80,5 +88,13 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
         Comment comment = commentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Comment with id " + id +
                 " was not found"));
         commentRepository.delete(comment);
+    }
+
+    private CommentDtoResponse convertToResponse(Comment comment) {
+        return commentMapper.convertToResponse(comment);
+    }
+
+    private void patchComment(Comment comment, UpdateCommentDto updateCommentDto) {
+        comment.setText(updateCommentDto.getText());
     }
 }
