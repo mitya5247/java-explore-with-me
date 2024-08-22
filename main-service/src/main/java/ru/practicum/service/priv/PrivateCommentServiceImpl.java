@@ -45,6 +45,7 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with id " + userId +
                 " was not found"));
         Comment comment = new Comment();
+        comment.setText(newCommentDto.getText());
         comment.setAuthor(user);
         comment.setEvent(event);
         comment.setTimestamp(LocalDateTime.now());
