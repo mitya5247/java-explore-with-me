@@ -1,6 +1,6 @@
 package ru.practicum.exceptions;
 
-public class CommentException extends Exception{
+public class CommentException extends Exception {
 
     String message;
 
