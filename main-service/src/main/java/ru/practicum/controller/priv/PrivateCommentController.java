@@ -8,6 +8,7 @@ import ru.practicum.Constants;
 import ru.practicum.exceptions.CommentException;
 import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.exceptions.EventIsNotPublishedException;
+import ru.practicum.exceptions.ValidationException;
 import ru.practicum.model.comment.dto.CommentDtoResponse;
 import ru.practicum.model.comment.dto.NewCommentDto;
 import ru.practicum.model.comment.dto.UpdateCommentDto;
@@ -49,7 +50,7 @@ public class PrivateCommentController {
                                         @RequestParam(required = false) List<Integer> eventId,
                                         @RequestParam(required = false) String text,
                                         @RequestParam(required = false) String startTime,
-                                        @RequestParam(required = false) String endTime) throws EntityNotFoundException {
+                                        @RequestParam(required = false) String endTime) throws EntityNotFoundException, ValidationException {
         return service.get(userId, eventId, text, startTime, endTime);
     }
 

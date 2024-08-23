@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.exceptions.CommentException;
 import ru.practicum.exceptions.EntityNotFoundException;
 import ru.practicum.exceptions.EventIsNotPublishedException;
+import ru.practicum.exceptions.ValidationException;
 import ru.practicum.mapper.CommentMapper;
 import ru.practicum.model.comment.Comment;
 import ru.practicum.model.comment.dto.CommentDtoResponse;
@@ -20,8 +21,10 @@ import ru.practicum.repository.EventRepository;
 import ru.practicum.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,9 +78,33 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
     }
 
     @Override
-    public List<CommentDtoResponse> get(@Nullable List<Integer> userId, @Nullable List<Integer> eventId,
-                                        @Nullable String text, @Nullable String startTime, String endTime) {
-        List<Comment> comments = commentRepository.findComments(userId, eventId, text, startTime, endTime);
+    public List<CommentDtoResponse> get(@Nullable List<Integer> usersId, @Nullable List<Integer> eventsId,
+                                        @Nullable String text, @Nullable String startTime, String endTime) throws ValidationException {
+
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        if (usersId == null) {
+            usersId = commentRepository.findUsersId();
+        }
+        if (eventsId == null) {
+            eventsId = commentRepository.findEventsId();
+        }
+        if (text == null) {
+            text = "";
+        }
+
+        Optional<String> startOpt = Optional.ofNullable(startTime);
+        startTime = startOpt.orElse("2020-01-01 00:00:00");
+        LocalDateTime start = LocalDateTime.parse(startTime, df);
+
+        Optional<String> endOpt = Optional.ofNullable(endTime);
+        endTime = endOpt.orElse("2037-01-01 00:00:00");
+        LocalDateTime end = LocalDateTime.parse(endTime, df);
+
+        this.validateTime(start, end);
+
+        text = "%" + text + "%";
+        List<Comment> comments = commentRepository.findComments(usersId, eventsId, text, start, end);
         return comments.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
@@ -96,5 +123,11 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
 
     private void patchComment(Comment comment, UpdateCommentDto updateCommentDto) {
         comment.setText(updateCommentDto.getText());
+    }
+
+    private void validateTime(LocalDateTime start, LocalDateTime end) throws ValidationException {
+        if (start.isAfter(end)) {
+            throw new ValidationException("start couldn't be after end");
+        }
     }
 }
