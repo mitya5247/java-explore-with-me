@@ -1,0 +1,1431 @@
+{
+	"info": {
+		"_postman_id": "78d3fdcf-72d6-4e22-8821-05fec16c5744",
+		"name": "feature-comments",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33495395"
+	},
+	"item": [
+		{
+			"name": "Create comment with not found event",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test( \"Ответ должен содержать код статуса 404\", function() {\r",
+							"    pm.expect(pm.response.code).to.equal(404);\r",
+							"}\r",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text\": \"my fitst comment!\" \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/comments/:user-id/event/:event-id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"comments",
+						":user-id",
+						"event",
+						":event-id"
+					],
+					"variable": [
+						{
+							"key": "user-id",
+							"value": "1"
+						},
+						{
+							"key": "event-id",
+							"value": "1354"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create comment with empty body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Код статус должен быть 400\", function() {\r",
+							"    pm.expect(pm.response.code).to.equal(400) \r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text\":\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/comments/:user-id/event/:event-id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"comments",
+						":user-id",
+						"event",
+						":event-id"
+					],
+					"variable": [
+						{
+							"key": "user-id",
+							"value": ""
+						},
+						{
+							"key": "event-id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create comment with empty text",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Код статус должен быть 400\", function() {\r",
+							"    pm.expect(pm.response.code).to.equal(400) \r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text\": \"\" \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/comments/:user-id/event/:event-id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"comments",
+						":user-id",
+						"event",
+						":event-id"
+					],
+					"variable": [
+						{
+							"key": "user-id",
+							"value": "1"
+						},
+						{
+							"key": "event-id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create comment",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {\r",
+							"  \r",
+							"   const echoPostUserRequest = {\r",
+							"  url: 'http://localhost:8080/admin/users',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ name: 'new user', email: \"myemail@google.com\" })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"    const echoPostCategoryRequest = {\r",
+							"    url: 'http://localhost:8080/admin/categories',\r",
+							"    method: 'POST',\r",
+							"    header: { \"Content-Type\": \"application/json\" },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify({ name: 'category'})\r",
+							"        }\r",
+							"    }\r",
+							"\r",
+							"\r",
+							"   const echoPostEventRequest = {\r",
+							"  url: 'http://localhost:8080/users/1/events',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ annotation: 'myannotation fjoisjdiofjosidlkfsdgjsdg', description: \"mydescription about isdkjdofskjdfioksaodkfiodj\", eventDate: \"2024-12-21 15:43:00\", title: \"great event!\", category: 1 })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"   const sendRequest = (req) => {\r",
+							"    return new Promise((resolve, reject) => {\r",
+							"        pm.sendRequest(req, (err, res) => {\r",
+							"            if (err) {\r",
+							"                console.log(err);\r",
+							"                return reject(err);\r",
+							"            }\r",
+							"            resolve(res);\r",
+							"        });\r",
+							"    });\r",
+							"};\r",
+							"\r",
+							"\r",
+							"   const publishEvent = {\r",
+							"  url: 'http://localhost:8080/admin/events/1',\r",
+							"  method: 'PATCH',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ stateAction: 'PUBLISHED' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"\r",
+							"const userResp = await sendRequest(echoPostUserRequest);\r",
+							"const categoryResp = await sendRequest(echoPostCategoryRequest);\r",
+							"const eventResp = await sendRequest(echoPostEventRequest);\r",
+							"const publishEventResp = await sendRequest(publishEvent);\r",
+							"};\r",
+							"\r",
+							"const interval = setInterval(() => {}, 1000);\r",
+							"\r",
+							"setTimeout(async () => \r",
+							"    {\r",
+							"        try {\r",
+							"            await main();\r",
+							"        } catch (e) {\r",
+							"            console.error(e);\r",
+							"        } finally {\r",
+							"            clearInterval(interval);\r",
+							"        }\r",
+							"    },  \r",
+							"    100 \r",
+							");\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test( \"Ответ должен содержать код статуса 201 и данные формата json\", function() {\r",
+							"    pm.expect(pm.response.code).to.equal(201);\r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"\r",
+							"}\r",
+							");\r",
+							"\r",
+							"pm.test(\"Ответ должен содержать поля: text, author, event, timestamp\", function () {\r",
+							"    pm.expect(pm.response.json()).to.have.property('text');\r",
+							"    pm.expect(pm.response.json()).to.have.property('author');\r",
+							"    pm.expect(pm.response.json()).to.have.property('event');\r",
+							"    pm.expect(pm.response.json()).to.have.property('timestamp');\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text\": \"my fitst comment!\" \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/comments/:user-id/event/:event-id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"comments",
+						":user-id",
+						"event",
+						":event-id"
+					],
+					"variable": [
+						{
+							"key": "user-id",
+							"value": "1"
+						},
+						{
+							"key": "event-id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patch comment with id = 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {\r",
+							"     const echoPostUserRequest = {\r",
+							"  url: 'http://localhost:8080/admin/users',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ name: 'user', email: \"myemail01124021@google.com\" })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"    const echoPostCategoryRequest = {\r",
+							"    url: 'http://localhost:8080/admin/categories',\r",
+							"    method: 'POST',\r",
+							"    header: { \"Content-Type\": \"application/json\" },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify({ name: 'new category'})\r",
+							"        }\r",
+							"    }\r",
+							"\r",
+							"\r",
+							"   const echoPostEventRequest = {\r",
+							"  url: 'http://localhost:8080/users/1/events',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ annotation: 'myannotation fjoisjdiofjosidlkfsdgjsdg', description: \"mydescription about isdkjdofskjdfioksaodkfiodj\", eventDate: \"2024-12-21 15:43:00\", title: \"second event!\", category: 1 })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"   const sendRequest = (req) => {\r",
+							"    return new Promise((resolve, reject) => {\r",
+							"        pm.sendRequest(req, (err, res) => {\r",
+							"            if (err) {\r",
+							"                console.log(err);\r",
+							"                return reject(err);\r",
+							"            }\r",
+							"            resolve(res);\r",
+							"        });\r",
+							"    });\r",
+							"};\r",
+							"\r",
+							"\r",
+							"   const publishEvent = {\r",
+							"  url: 'http://localhost:8080/admin/events/1',\r",
+							"  method: 'PATCH',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ stateAction: 'PUBLISHED' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"  const commentReq = {\r",
+							"  url: 'http://localhost:8080/comments/1/event/1',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ text: 'first point about event' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"\r",
+							"const userResp = await sendRequest(echoPostUserRequest);\r",
+							"const categoryResp = await sendRequest(echoPostCategoryRequest);\r",
+							"const eventResp = await sendRequest(echoPostEventRequest);\r",
+							"const publishEventResp = await sendRequest(publishEvent);\r",
+							"const commentResp = await sendRequest(commentReq);\r",
+							"}\r",
+							"\r",
+							"const interval = setInterval(() => {}, 1000);\r",
+							"\r",
+							"setTimeout(async () => \r",
+							"    {\r",
+							"        try {\r",
+							"            await main();\r",
+							"        } catch (e) {\r",
+							"            console.error(e);\r",
+							"        } finally {\r",
+							"            clearInterval(interval);\r",
+							"        }\r",
+							"    },  \r",
+							"    100 \r",
+							");\r",
+							"\r",
+							"\r",
+							"  "
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test( \"Ответ должен содержать код статуса 200 и данные формата json\", function() {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"\r",
+							"}\r",
+							");\r",
+							"\r",
+							"pm.test(\"Ответ должен содержать поля: text, author, event, timestamp\", function () {\r",
+							"    pm.expect(pm.response.json()).to.have.property('text');\r",
+							"    pm.expect(pm.response.json()).to.have.property('author');\r",
+							"    pm.expect(pm.response.json()).to.have.property('event');\r",
+							"    pm.expect(pm.response.json()).to.have.property('timestamp');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"text должен быть 'new text!'\", function() {\r",
+							"    pm.expect(pm.response.json().text).to.be.equal('new text!');\r",
+							"\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text\" : \"new text!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/comments/:user-id/comment/:comment-id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"comments",
+						":user-id",
+						"comment",
+						":comment-id"
+					],
+					"variable": [
+						{
+							"key": "user-id",
+							"value": "1"
+						},
+						{
+							"key": "comment-id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patch comment without text",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test( \"Ответ должен содержать код статуса 400\", function() {\r",
+							"    pm.expect(pm.response.code).to.equal(400);\r",
+							"}\r",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/comments/:user-id/comment/:comment-id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"comments",
+						":user-id",
+						"comment",
+						":comment-id"
+					],
+					"variable": [
+						{
+							"key": "user-id",
+							"value": "1"
+						},
+						{
+							"key": "comment-id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patch comment with id = 2 by not author comment",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {\r",
+							"   const echoPostUserRequest = {\r",
+							"  url: 'http://localhost:8080/admin/users',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ name: 'user1', email: \"myemail100076521@google.com\" })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"    const echoPostCategoryRequest = {\r",
+							"    url: 'http://localhost:8080/admin/categories',\r",
+							"    method: 'POST',\r",
+							"    header: { \"Content-Type\": \"application/json\" },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify({ name: 'new category'})\r",
+							"        }\r",
+							"    }\r",
+							"\r",
+							"\r",
+							"   const echoPostEventRequest = {\r",
+							"  url: 'http://localhost:8080/users/1/events',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ annotation: 'myannotation fjoisjdiofjosidlkfsdgjsdg23', description: \"mydescription about isdkjdofskjdfioksaodkfiodj\", eventDate: \"2024-12-21 15:43:00\", title: \"second event!\", category: 1 })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"   const sendRequest = (req) => {\r",
+							"    return new Promise((resolve, reject) => {\r",
+							"        pm.sendRequest(req, (err, res) => {\r",
+							"            if (err) {\r",
+							"                console.log(err);\r",
+							"                return reject(err);\r",
+							"            }\r",
+							"            resolve(res);\r",
+							"        });\r",
+							"    });\r",
+							"};\r",
+							"\r",
+							"\r",
+							"   const publishEvent = {\r",
+							"  url: 'http://localhost:8080/admin/events/1',\r",
+							"  method: 'PATCH',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ stateAction: 'PUBLISHED' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"  const commentReq = {\r",
+							"  url: 'http://localhost:8080/comments/1/event/1',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ text: 'first point about event' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"    const echoPostUserRequestNew = {\r",
+							"  url: 'http://localhost:8080/admin/users',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ name: 'user2', email: \"myemail10021089706@google.com\" })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"\r",
+							"const userResp = await sendRequest(echoPostUserRequest);\r",
+							"const categoryResp = await sendRequest(echoPostCategoryRequest);\r",
+							"const eventResp = await sendRequest(echoPostEventRequest);\r",
+							"const publishEventResp = await sendRequest(publishEvent);\r",
+							"const commentResp = await sendRequest(commentReq);\r",
+							"const userRespNew = await sendRequest(echoPostUserRequestNew);\r",
+							"}\r",
+							"\r",
+							"const interval = setInterval(() => {}, 1000);\r",
+							"\r",
+							"setTimeout(async () => \r",
+							"    {\r",
+							"        try {\r",
+							"            await main();\r",
+							"        } catch (e) {\r",
+							"            console.error(e);\r",
+							"        } finally {\r",
+							"            clearInterval(interval);\r",
+							"        }\r",
+							"    },  \r",
+							"    100 \r",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test( \"Ответ должен содержать код статуса 403 и данные формата json\", function() {\r",
+							"    pm.expect(pm.response.code).to.equal(403);\r",
+							"}\r",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text\" : \"let patch our comment!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/comments/:user-id/comment/:comment-id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"comments",
+						":user-id",
+						"comment",
+						":comment-id"
+					],
+					"variable": [
+						{
+							"key": "user-id",
+							"value": "2"
+						},
+						{
+							"key": "comment-id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get comment with id = 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test( \"Ответ должен содержать код статуса 200 и данные формата json\", function() {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"\r",
+							"}\r",
+							");\r",
+							"\r",
+							"pm.test(\"Ответ должен содержать поля: text, author, event, timestamp\", function () {\r",
+							"    pm.expect(pm.response.json()).to.have.property('text');\r",
+							"    pm.expect(pm.response.json()).to.have.property('author');\r",
+							"    pm.expect(pm.response.json()).to.have.property('event');\r",
+							"    pm.expect(pm.response.json()).to.have.property('timestamp');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Текст: new text!\", function () {\r",
+							"    pm.expect(pm.response.json().text).to.be.eq('new text!');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {\r",
+							"   const echoPostUserRequest = {\r",
+							"  url: 'http://localhost:8080/admin/users',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ name: 'user1', email: \"myemail10020980761@google.com\" })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"    const echoPostCategoryRequest = {\r",
+							"    url: 'http://localhost:8080/admin/categories',\r",
+							"    method: 'POST',\r",
+							"    header: { \"Content-Type\": \"application/json\" },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify({ name: 'new category'})\r",
+							"        }\r",
+							"    }\r",
+							"\r",
+							"\r",
+							"   const echoPostEventRequest = {\r",
+							"  url: 'http://localhost:8080/users/1/events',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ annotation: 'myannotation fjoisjdiofjosidlkfsdgjsdg23', description: \"mydescription about isdkjdofskjdfioksaodkfiodj\", eventDate: \"2024-12-21 15:43:00\", title: \"second event!\", category: 1 })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"   const sendRequest = (req) => {\r",
+							"    return new Promise((resolve, reject) => {\r",
+							"        pm.sendRequest(req, (err, res) => {\r",
+							"            if (err) {\r",
+							"                console.log(err);\r",
+							"                return reject(err);\r",
+							"            }\r",
+							"            resolve(res);\r",
+							"        });\r",
+							"    });\r",
+							"};\r",
+							"\r",
+							"\r",
+							"   const publishEvent = {\r",
+							"  url: 'http://localhost:8080/admin/events/1',\r",
+							"  method: 'PATCH',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ stateAction: 'PUBLISHED' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"   const commentReq = {\r",
+							"  url: 'http://localhost:8080/comments/1/event/1',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ text: 'new text!' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"const userResp = await sendRequest(echoPostUserRequest);\r",
+							"const categoryResp = await sendRequest(echoPostCategoryRequest);\r",
+							"const eventResp = await sendRequest(echoPostEventRequest);\r",
+							"const publishEventResp = await sendRequest(publishEvent);\r",
+							"const commentResp = await sendRequest(commentReq);\r",
+							"}\r",
+							"\r",
+							"const interval = setInterval(() => {}, 1000);\r",
+							"\r",
+							"setTimeout(async () => \r",
+							"    {\r",
+							"        try {\r",
+							"            await main();\r",
+							"        } catch (e) {\r",
+							"            console.error(e);\r",
+							"        } finally {\r",
+							"            clearInterval(interval);\r",
+							"        }\r",
+							"    },  \r",
+							"    100 \r",
+							");\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/comments/:comment-id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"comments",
+						":comment-id"
+					],
+					"variable": [
+						{
+							"key": "comment-id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get comments without parametres",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {\r",
+							"\r",
+							"   const echoPostUserRequest = {\r",
+							"  url: 'http://localhost:8080/admin/users',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ name: 'user1', email: \"myemailjgiofdjgoid10021@google.com\" })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"    const echoPostCategoryRequest = {\r",
+							"    url: 'http://localhost:8080/admin/categories',\r",
+							"    method: 'POST',\r",
+							"    header: { \"Content-Type\": \"application/json\" },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify({ name: 'new category'})\r",
+							"        }\r",
+							"    }\r",
+							"\r",
+							"\r",
+							"   const echoPostEventRequest = {\r",
+							"  url: 'http://localhost:8080/users/1/events',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ annotation: 'myannotation fjoisjdiofjosidlkfsdgjsdg23', description: \"mydescription about isdkjdofskjdfioksaodkfiodj\", eventDate: \"2024-12-21 15:43:00\", title: \"second event!\", category: 1 })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"   const sendRequest = (req) => {\r",
+							"    return new Promise((resolve, reject) => {\r",
+							"        pm.sendRequest(req, (err, res) => {\r",
+							"            if (err) {\r",
+							"                console.log(err);\r",
+							"                return reject(err);\r",
+							"            }\r",
+							"            resolve(res);\r",
+							"        });\r",
+							"    });\r",
+							"};\r",
+							"\r",
+							"\r",
+							"   const publishEvent = {\r",
+							"  url: 'http://localhost:8080/admin/events/1',\r",
+							"  method: 'PATCH',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ stateAction: 'PUBLISHED' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"   const commentReq1 = {\r",
+							"  url: 'http://localhost:8080/comments/1/event/1',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ text: 'first text!' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"      const commentReq2 = {\r",
+							"  url: 'http://localhost:8080/comments/1/event/1',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ text: 'second text!' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"   \r",
+							"      const commentReq3 = {\r",
+							"  url: 'http://localhost:8080/comments/1/event/1',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ text: 'third text!' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"const userResp = await sendRequest(echoPostUserRequest);\r",
+							"const categoryResp = await sendRequest(echoPostCategoryRequest);\r",
+							"const eventResp = await sendRequest(echoPostEventRequest);\r",
+							"const publishEventResp = await sendRequest(publishEvent);\r",
+							"const commentResp1 = await sendRequest(commentReq1);\r",
+							"const commentResp2 = await sendRequest(commentReq2);\r",
+							"const commentResp3 = await sendRequest(commentReq3);\r",
+							"}\r",
+							"const interval = setInterval(() => {}, 1000);\r",
+							"\r",
+							"setTimeout(async () => \r",
+							"    {\r",
+							"        try {\r",
+							"            await main();\r",
+							"        } catch (e) {\r",
+							"            console.error(e);\r",
+							"        } finally {\r",
+							"            clearInterval(interval);\r",
+							"        }\r",
+							"    },  \r",
+							"    100 \r",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Должен возвращаться код ответа 200 и список\", function() {\r",
+							"    pm.response.to.have.body;\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"    pm.expect(pm.response.json()).to.be.gte;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/comments",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"comments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get request with params",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {\r",
+							"\r",
+							"   const echoPostUserRequest = {\r",
+							"  url: 'http://localhost:8080/admin/users',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ name: 'user1', email: \"myemailoiuyt10045321@google.com\" })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"    const echoPostCategoryRequest = {\r",
+							"    url: 'http://localhost:8080/admin/categories',\r",
+							"    method: 'POST',\r",
+							"    header: { \"Content-Type\": \"application/json\" },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify({ name: 'new category'})\r",
+							"        }\r",
+							"    }\r",
+							"\r",
+							"\r",
+							"   const echoPostEventRequest = {\r",
+							"  url: 'http://localhost:8080/users/1/events',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ annotation: 'myannotation fjoisjdiofjosidlkfsdgjsdg23', description: \"mydescription about isdkjdofskjdfioksaodkfiodj\", eventDate: \"2024-12-21 15:43:00\", title: \"second event!\", category: 1 })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"   const sendRequest = (req) => {\r",
+							"    return new Promise((resolve, reject) => {\r",
+							"        pm.sendRequest(req, (err, res) => {\r",
+							"            if (err) {\r",
+							"                console.log(err);\r",
+							"                return reject(err);\r",
+							"            }\r",
+							"            resolve(res);\r",
+							"        });\r",
+							"    });\r",
+							"};\r",
+							"\r",
+							"\r",
+							"   const publishEvent = {\r",
+							"  url: 'http://localhost:8080/admin/events/1',\r",
+							"  method: 'PATCH',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ stateAction: 'PUBLISHED' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"   \r",
+							"   const echoPostUserRequestNew = {\r",
+							"  url: 'http://localhost:8080/admin/users',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ name: 'user1', email: \"myemail545641@google.com\" })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"   const commentReq1 = {\r",
+							"  url: 'http://localhost:8080/comments/1/event/1',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ text: 'first text!' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"      const commentReq2 = {\r",
+							"  url: 'http://localhost:8080/comments/1/event/1',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ text: 'second text!' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"   \r",
+							"      const commentReq3 = {\r",
+							"  url: 'http://localhost:8080/comments/2/event/1',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ text: 'third text!' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"const userResp = await sendRequest(echoPostUserRequest);\r",
+							"const categoryResp = await sendRequest(echoPostCategoryRequest);\r",
+							"const eventResp = await sendRequest(echoPostEventRequest);\r",
+							"const publishEventResp = await sendRequest(publishEvent);\r",
+							"const userResp2 = await sendRequest(echoPostUserRequestNew);\r",
+							"\r",
+							"const commentResp1 = await sendRequest(commentReq1);\r",
+							"const commentResp2 = await sendRequest(commentReq2);\r",
+							"const commentResp3 = await sendRequest(commentReq3);\r",
+							"}\r",
+							"\r",
+							"const interval = setInterval(() => {}, 1000);\r",
+							"\r",
+							"setTimeout(async () => \r",
+							"    {\r",
+							"        try {\r",
+							"            await main();\r",
+							"        } catch (e) {\r",
+							"            console.error(e);\r",
+							"        } finally {\r",
+							"            clearInterval(interval);\r",
+							"        }\r",
+							"    },  \r",
+							"    100 \r",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Должен возвращаться код ответа 200 и список\", function() {\r",
+							"    pm.response.to.have.body;\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"    pm.expect(pm.response.json()).to.be.gte;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Текст первого и последнего комментариев должны содержать 'first'\", function() {\r",
+							"    pm.expect(pm.response.json()[0].text).contain('first');\r",
+							"    pm.expect(pm.response.json()[pm.response.json().length - 1].text).contain('first');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/comments?userId=1&eventId=1&text=first",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"comments"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "1"
+						},
+						{
+							"key": "eventId",
+							"value": "1"
+						},
+						{
+							"key": "text",
+							"value": "first"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get comments with author id = 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Должен возвращаться код ответа 200 и список\", function() {\r",
+							"    pm.response.to.have.body;\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"    pm.expect(pm.response.json()).to.be.gte;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Автор должен быть с id = 2\", function() {\r",
+							"    pm.expect(pm.response.json()[0].author).equal(2);\r",
+							"    pm.expect(pm.response.json()[pm.response.json().length - 1].author).equal(2);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/comments?userId=2&eventId=1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"comments"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "2"
+						},
+						{
+							"key": "eventId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete comment with id = 1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							" const main = async () => {\r",
+							"\r",
+							" const echoPostUserRequest = {\r",
+							"  url: 'http://localhost:8080/admin/users',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ name: 'user1', email: \"myemailjgiofdjgo32id10021@google.com\" })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"    const echoPostCategoryRequest = {\r",
+							"    url: 'http://localhost:8080/admin/categories',\r",
+							"    method: 'POST',\r",
+							"    header: { \"Content-Type\": \"application/json\" },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify({ name: 'new category'})\r",
+							"        }\r",
+							"    }\r",
+							"\r",
+							"\r",
+							"   const echoPostEventRequest = {\r",
+							"  url: 'http://localhost:8080/users/1/events',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ annotation: 'myannotation fjoisjdiofjosidlkfsdgjsdg23', description: \"mydescription about isdkjdofskjdfioksaodkfiodj\", eventDate: \"2024-12-21 15:43:00\", title: \"second event!\", category: 1 })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"   const sendRequest = (req) => {\r",
+							"    return new Promise((resolve, reject) => {\r",
+							"        pm.sendRequest(req, (err, res) => {\r",
+							"            if (err) {\r",
+							"                console.log(err);\r",
+							"                return reject(err);\r",
+							"            }\r",
+							"            resolve(res);\r",
+							"        });\r",
+							"    });\r",
+							"};\r",
+							"\r",
+							"\r",
+							"   const publishEvent = {\r",
+							"  url: 'http://localhost:8080/admin/events/1',\r",
+							"  method: 'PATCH',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ stateAction: 'PUBLISHED' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"   const commentReq1 = {\r",
+							"  url: 'http://localhost:8080/comments/1/event/1',\r",
+							"  method: 'POST',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ text: 'last text!' })\r",
+							"        }\r",
+							"   }\r",
+							"\r",
+							"\r",
+							"\r",
+							"const userResp = await sendRequest(echoPostUserRequest);\r",
+							"const categoryResp = await sendRequest(echoPostCategoryRequest);\r",
+							"const eventResp = await sendRequest(echoPostEventRequest);\r",
+							"const publishEventResp = await sendRequest(publishEvent);\r",
+							"const commentResp1 = await sendRequest(commentReq1);\r",
+							"\r",
+							"}\r",
+							"\r",
+							"const interval = setInterval(() => {}, 1000);\r",
+							"\r",
+							"setTimeout(async () => \r",
+							"    {\r",
+							"        try {\r",
+							"            await main();\r",
+							"        } catch (e) {\r",
+							"            console.error(e);\r",
+							"        } finally {\r",
+							"            clearInterval(interval);\r",
+							"        }\r",
+							"    },  \r",
+							"    100 \r",
+							");\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Должен возвращаться код ответа 204\", function() {\r",
+							"    pm.expect(pm.response.code).to.equal(204);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"const commentReq1 = {\r",
+							"  url: 'http://localhost:8080/comments/1',\r",
+							"  method: 'GET',\r",
+							"  header: { \"Content-Type\": \"application/json\" },\r",
+							"   }\r",
+							"\r",
+							"pm.sendRequest(commentReq1, (error, response) => {\r",
+							"        pm.test(\"Категория не должна быть найдена после удаления\", function () {\r",
+							"            pm.expect(response.code).to.eql(404);\r",
+							"        });\r",
+							"    });"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/comments/:comment-id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"comments",
+						":comment-id"
+					],
+					"variable": [
+						{
+							"key": "comment-id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"\r",
+					"   "
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"\r",
+					"   \r",
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		}
+	]
+}

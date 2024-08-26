@@ -3,6 +3,7 @@ package ru.practicum.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -152,6 +153,51 @@ public class ErrorHandler {
     public ApiError handleValidationException(final ValidationException e) {
         List<StackTraceElement> list = List.of(e.getStackTrace());
         log.info("event is already canceled");
+        ApiError apiError = new ApiError();
+        apiError.setErrors(list);
+        if (e.getCause() != null) {
+            apiError.setReason(e.getCause().toString());
+        }
+        apiError.setMessage(e.getMessage());
+        apiError.setStatus(HttpStatus.BAD_REQUEST.toString());
+        return apiError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleNotPublishedException(final EventIsNotPublishedException e) {
+        List<StackTraceElement> list = List.of(e.getStackTrace());
+        log.info("event is not published");
+        ApiError apiError = new ApiError();
+        apiError.setErrors(list);
+        if (e.getCause() != null) {
+            apiError.setReason(e.getCause().toString());
+        }
+        apiError.setMessage(e.getMessage());
+        apiError.setStatus(HttpStatus.NOT_FOUND.toString());
+        return apiError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ApiError handleNotPublishedException(final CommentException e) {
+        List<StackTraceElement> list = List.of(e.getStackTrace());
+        log.info("forbidden access");
+        ApiError apiError = new ApiError();
+        apiError.setErrors(list);
+        if (e.getCause() != null) {
+            apiError.setReason(e.getCause().toString());
+        }
+        apiError.setMessage(e.getMessage());
+        apiError.setStatus(HttpStatus.FORBIDDEN.toString());
+        return apiError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleNotPublishedException(final MethodArgumentNotValidException e) {
+        List<StackTraceElement> list = List.of(e.getStackTrace());
+        log.info("bad request");
         ApiError apiError = new ApiError();
         apiError.setErrors(list);
         if (e.getCause() != null) {
